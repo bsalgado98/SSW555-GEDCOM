@@ -10,14 +10,15 @@ tag = ""
 fileLines = []
 zeroLevelId = ""
 zeroLevelTag = ""
-
+prevTag = ""
 for line in gedcomFile:
     fileLines = line.split()
     level = int(fileLines[0])
     tag = fileLines[1]
     valid = "N"
+    
     arguments = " ".join(fileLines[2:])
-    print("--> " + line.strip())
+    #print("--> " + line.strip())
     if (fileLines[1] == "NOTE"):
         continue
     #print ("key: " + fileLines[0] + str(int(fileLines[0]) in supportedTags) + " value: " + fileLines[1] + str(fileLines[1] == supportedTags[int(fileLines[0])] ) ) 
@@ -30,8 +31,14 @@ for line in gedcomFile:
             arguments = fileLines[1]
             treeList[arguments] = {}
     elif((fileLines[1] in supportedTags.keys()) and (level in supportedTags.values())):
-        treeList[zeroLevelId][fileLines[1]] = arguments
+    #elif((fileLines[0] == 1) and ((fileLines[1]) in supportedTags.keys()) and (level in supportedTags.values())):
+        if (fileLines[1] == "DATE"):
+            treeList[zeroLevelId][prevTag] = arguments
+        else:
+            treeList[zeroLevelId][fileLines[1]] = arguments 
         if(supportedTags[fileLines[1]] == level):
             valid = "Y"
+    prevTag = tag        
     #print("<-- " + str(level) + "|" + tag + "|" + valid + "|" + arguments)
 print(treeList)
+
