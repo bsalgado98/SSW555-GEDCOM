@@ -1,0 +1,22 @@
++-----+---------------------+--------+-------------+-----+-------+-------------+-------+--------+
+|  ID |         Name        | Gender |   Birthday  | Age | Alive |    Death    | Child | Spouse |
++-----+---------------------+--------+-------------+-----+-------+-------------+-------+--------+
+|  I1 |    Saul /Weaver/    |   M    | 21 APR 1941 |  25 | False | 10 DEC 1966 |   NA  |   F1   |
+| I10 | Angeline /Johnston/ |   F    |  7 JUN 1997 |  21 |  True |      NA     |   F3  |   NA   |
+|  I2 |   Peter /Johnston/  |   M    | 15 JAN 1940 |  78 |  True |      NA     |   NA  |   F1   |
+|  I3 |   Sarah /Johnston/  |   F    | 30 MAY 1943 |  75 |  True |      NA     |   NA  |   F1   |
+|  I4 |   James /Johnston/  |   M    |  2 OCT 1972 |  45 |  True |      NA     |   F1  |   F3   |
+|  I5 |  Richard /Coppola/  |   M    |  9 FEB 1939 |  79 |  True |      NA     |   NA  |   F1   |
+|  I6 |    Mary /Coppola/   |   F    | 15 JAN 1942 |  76 |  True |      NA     |   NA  |   F1   |
+|  I7 |   Lisa /Johnston/   |   F    |  6 NOV 1971 |  46 |  True |      NA     |   F1  |   F3   |
+|  I8 |     Louis /Ford/    |   M    | 11 JUL 1974 |  44 |  True |      NA     |   NA  |   NA   |
+|  I9 |   Noah /Johnston/   |   M    |  1 MAR 2000 |  18 |  True |      NA     |   F3  |   NA   |
++-----+---------------------+--------+-------------+-----+-------+-------------+-------+--------+
+Families
++----+-------------------------------+-------------+------------+-------------------+---------+------------------+---------------------+
+| ID |            Married            |   Divorced  | Husband ID |    Husband Name   | Wife ID |    Wife Name     |       Children      |
++----+-------------------------------+-------------+------------+-------------------+---------+------------------+---------------------+
+| F1 |  ['3 JUL 1963', '3 SEP 1968'] |      NA     |     I2     |  Peter /Johnston/ |    I3   | Sarah /Johnston/ |          I4         |
+| F2 |           3 SEP 1970          |      NA     |     I5     | Richard /Coppola/ |    I6   |  Mary /Coppola/  |          I7         |
+| F3 | ['6 AUG 1994', '20 SEP 1998'] | 16 MAR 1996 |     I4     |  James /Johnston/ |    I7   | Lisa /Johnston/  | ['I9', 'I10', 'I3'] |
++----+-------------------------------+-------------+------------+-------------------+---------+------------------+---------------------+
