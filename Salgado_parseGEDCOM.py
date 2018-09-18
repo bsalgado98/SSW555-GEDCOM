@@ -110,7 +110,7 @@ def printtree():
             args["HUSB"] = "NA"
             husbname = "NA"
         else:
-            husbname = individualList[args["WIFE"]]["NAME"]
+            husbname = individualList[args["HUSB"]]["NAME"]
         if "WIFE" not in args.keys():
             args["WIFE"] = "NA"
             wifename = "NA"
