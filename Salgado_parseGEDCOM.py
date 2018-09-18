@@ -15,12 +15,18 @@ def addtag(isIndi, id, tag, value):
             if tag not in individualList[id].keys() or individualList[id][tag] == '':
                 individualList[id][tag] = value
             else:
-                individualList[id][tag] = [individualList[id][tag]] + [value]
+                if isinstance(individualList[id][tag], list):
+                    individualList[id][tag] += [value]
+                else:
+                    individualList[id][tag] = [individualList[id][tag]] + [value]
         else:
             if tag not in treeList[id].keys() or treeList[id][tag] == '':
                 treeList[id][tag] = value
             else:
-                treeList[id][tag] = [treeList[id][tag]] + [value]
+                if isinstance(treeList[id][tag], list):
+                    treeList[id][tag] += [value]
+                else:
+                    treeList[id][tag] = [treeList[id][tag]] + [value]
 
 
 def parse(gedcomFile):
