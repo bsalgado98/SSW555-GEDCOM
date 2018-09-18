@@ -1,23 +1,31 @@
-from prettytable import PrettyTable
 import datetime
+import sys
+from prettytable import PrettyTable
 
 supportedTags = {"INDI": 0, "NAME": 1, "SEX": 1, "BIRT": 1, "DEAT": 1, "FAMC": 1, "FAMS": 1, "FAM": 0, "MARR": 1,
                  "HUSB": 1, "WIFE": 1, "CHIL": 1, "DIV": 1, "DATE": 2, "HEAD": 0, "TRLR": 0, "NOTE": 0}
-gedcomFile = open("familyTree.ged", "r")
 
 treeList = {}
 individualList = {}
-currentID = 0
-
-level = 0
-tag = ""
-fileLines = []
-zeroLevelId = ""
-zeroLevelTag = ""
-prevTag = ""
 
 
-def parse():
+def addtag(isIndi, id, tag, value):
+    if value is not '':
+        if isIndi:
+            if tag not in individualList[id].keys() or individualList[id][tag] == '':
+                individualList[id][tag] = value
+            else:
+                individualList[id][tag] = [individualList[id][tag]] + [value]
+        else:
+            if tag not in treeList[id].keys() or treeList[id][tag] == '':
+                treeList[id][tag] = value
+            else:
+                treeList[id][tag] = [treeList[id][tag]] + [value]
+
+
+def parse(gedcomFile):
+    zeroLevelId = ""
+    prevTag = ""
     for line in gedcomFile:
         fileLines = line.split()
         level = int(fileLines[0])
@@ -43,15 +51,17 @@ def parse():
                     isIndi = False
         elif (fileLines[1] in supportedTags.keys()) and (level in supportedTags.values()):
             if fileLines[1] == "DATE":
-                if isIndi:
-                    individualList[zeroLevelId][prevTag] = arguments
-                else:
-                    treeList[zeroLevelId][prevTag] = arguments
+                addtag(isIndi, zeroLevelId, prevTag, arguments)
+                # if isIndi:
+                #     individualList[zeroLevelId][prevTag] = arguments
+                # else:
+                #     treeList[zeroLevelId][prevTag] = arguments
             else:
-                if isIndi:
-                    individualList[zeroLevelId][fileLines[1]] = arguments
-                else:
-                    treeList[zeroLevelId][fileLines[1]] = arguments
+                addtag(isIndi, zeroLevelId, fileLines[1], arguments)
+                # if isIndi:
+                #     individualList[zeroLevelId][fileLines[1]] = arguments
+                # else:
+                #     treeList[zeroLevelId][fileLines[1]] = arguments
             if supportedTags[fileLines[1]] == level:
                 valid = "Y"
         prevTag = tag
@@ -67,7 +77,9 @@ def printtree():
             args["SEX"] = "NA"
         if "BIRT" not in args.keys():
             args["BIRT"] = "NA"
-        birth = datetime.datetime.strptime(args["BIRT"], "%d %b %Y").date()
+            birth = datetime.date(1, 1, 1)  # just to prevent errors
+        else:
+            birth = datetime.datetime.strptime(args["BIRT"], "%d %b %Y").date()
         if "DEAT" not in args.keys():
             args["DEAT"] = "NA"
             age = datetime.date.today() - birth
@@ -107,5 +119,8 @@ def printtree():
     print(famTable.get_string(sortby="ID"))
 
 
-parse()
-printtree()
+if __name__ == "__main__":
+    with open(sys.argv[1], "r") as file:
+        gedcomFile = file.readlines()
+    parse(gedcomFile)
+    printtree()
