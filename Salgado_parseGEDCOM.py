@@ -28,9 +28,10 @@ for line in gedcomFile:
             valid = "Y"
             tag = fileLines[2]
             arguments = fileLines[1]
-            treeList[arguments] = []
+            treeList[arguments] = {}
     elif((fileLines[1] in supportedTags.keys()) and (level in supportedTags.values())):
         treeList[zeroLevelId][fileLines[1]] = arguments
         if(supportedTags[fileLines[1]] == level):
             valid = "Y"
-    print("<-- " + str(level) + "|" + tag + "|" + valid + "|" + arguments)
+    #print("<-- " + str(level) + "|" + tag + "|" + valid + "|" + arguments)
+print(treeList)
