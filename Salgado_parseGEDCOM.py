@@ -21,7 +21,6 @@ for line in gedcomFile:
     #print("--> " + line.strip())
     if (fileLines[1] == "NOTE"):
         continue
-    #print ("key: " + fileLines[0] + str(int(fileLines[0]) in supportedTags) + " value: " + fileLines[1] + str(fileLines[1] == supportedTags[int(fileLines[0])] ) ) 
     if (("INDI" in fileLines) or ("FAM" in fileLines)):
         if((level == 0) and ((fileLines[2] == "INDI") or (fileLines[2] == "FAM"))):
             zeroLevelTag = tag
@@ -31,7 +30,6 @@ for line in gedcomFile:
             arguments = fileLines[1]
             treeList[arguments] = {}
     elif((fileLines[1] in supportedTags.keys()) and (level in supportedTags.values())):
-    #elif((fileLines[0] == 1) and ((fileLines[1]) in supportedTags.keys()) and (level in supportedTags.values())):
         if (fileLines[1] == "DATE"):
             treeList[zeroLevelId][prevTag] = arguments
         else:
