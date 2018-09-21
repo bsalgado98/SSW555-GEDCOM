@@ -1,8 +1,4 @@
-import datetime
-import sys
-from prettytable import PrettyTable
 import cmd
-
 supportedTags = {"INDI": 0, "NAME": 1, "SEX": 1, "BIRT": 1, "DEAT": 1, "FAMC": 1, "FAMS": 1, "FAM": 0, "MARR": 1,
                  "HUSB": 1, "WIFE": 1, "CHIL": 1, "DIV": 1, "DATE": 2, "HEAD": 0, "TRLR": 0, "NOTE": 0}
 
@@ -58,58 +54,20 @@ def parse(gedcomFile):
                 valid = "Y"
 
         prevTag = tag
+    return treeList, individualList
 
 
-def printTree():
-    indiTable = PrettyTable(["ID", "Name", "Gender", "Birthday", "Age", "Alive", "Death", "Child", "Spouse"])
-    columns = ["NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS"]
-    for id, args in individualList.items():
-        for col in columns:
-            if col not in args.keys():
-                args[col] = "NA"
-        if args["BIRT"] is not "NA":
-            birth = datetime.datetime.strptime(args["BIRT"], "%d %b %Y").date()
-        else:
-            birth = datetime.date(1, 1, 1)  # just to prevent errors
-        if args["DEAT"] is not "NA":
-            death = datetime.datetime.strptime(args["DEAT"], "%d %b %Y").date()
-            age = death - birth
-        else:
-            age = datetime.date.today() - birth
-        indiTable.add_row(
-            [id, args["NAME"], args["SEX"], args["BIRT"], age.days // 365, args["DEAT"] == "NA", args["DEAT"],
-             args["FAMC"], args["FAMS"]])
 
-    famTable = PrettyTable(
-        ["ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID", "Wife Name", "Children"])
-    columns = ["MARR", "DIV", "HUSB", "WIFE", "CHIL"]
-    for id, args in treeList.items():
-        for col in columns:
-            if col not in args.keys():
-                args[col] = "NA"
-        if args["HUSB"] is not "NA":
-            husbName = individualList[args["HUSB"]]["NAME"]
-        else:
-            husbName = "NA"
-        if args["WIFE"] is not "NA":
-            wifeName = individualList[args["WIFE"]]["NAME"]
-        else:
-            wifeName = "NA"
-        famTable.add_row([id, args["MARR"], args["DIV"], args["HUSB"], husbName, args["WIFE"], wifeName, args["CHIL"]])
 
-    print("Individuals")
-    print(indiTable.get_string(sortby="ID"))
-    print("Families")
-    print(famTable.get_string(sortby="ID"))
-
-if __name__ == "__main__":
-    with open(sys.argv[1], "r") as file:
-        gedcomFile = file.readlines()
-    parse(gedcomFile)
-    printTree()
-
-# for testing within IDE
+# # if __name__ == "__main__":
+#     with open(sys.argv[1], "r") as file:
+#         gedcomFile = file.readlines()
+#     parse(gedcomFile)
+#     printTree()
+#
+# # for testing within IDE
 # with open("familyTree.ged", "r") as file:
 #     gedcomFile = file.readlines()
 # parse(gedcomFile)
 # printTree()
+# treeChecker
