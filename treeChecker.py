@@ -19,11 +19,13 @@ def birthBeforeMarriage(treeList, individualList):
     print(individualMarriages)
     
 def birthBeforeDeath(treeList, individualList):
-    individualBirthdays = {}
+    invalidList = {}
     individualDeaths = {}
     for key, value in individualList.items():
         if "I" in key:
-            individualBirthdays[value.get("NAME")] = value.get("BIRT")
+            if value.get("DEAT") != "NA":
+                individualDeaths[value.get("NAME")] = value.get("DEAT")
+                
     
 def us06(treeList, individualList):
     pass
