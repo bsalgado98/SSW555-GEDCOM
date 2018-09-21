@@ -12,3 +12,8 @@ def birthBeforeMarriage(treeList, individualList):
         if key.contains("I"):
             print (value.get("NAME"))
         
+def us06(treeList, individualList):
+    pass
+
+def main(treeList, individualList):
+    us06(treeList, individualList)
