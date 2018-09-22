@@ -12,18 +12,18 @@ def convertDate(treeList, individualList):
 	for key, value in individualList.items():
 		print(value)
 		if value["BIRT"] != "NA":
-			value["BIRT"] == datetime.datetime.strptime(value["BIRT"], "%d %b %Y").date()
+			value["BIRT"] = datetime.datetime.strptime(value["BIRT"], "%d %b %Y").date()
 		if value["DEAT"] != "NA":
-			value["DEAT"] == datetime.datetime.strptime(value["DEAT"], "%d %b %Y").date()
+			value["DEAT"] = datetime.datetime.strptime(value["DEAT"], "%d %b %Y").date()
 		if value["MARR"] != "NA":
-			value["MARR"] == datetime.datetime.strptime(value["MARR"], "%d %b %Y").date()
+			value["MARR"] = datetime.datetime.strptime(value["MARR"], "%d %b %Y").date()
 		if value["DIV"] != "NA":	
-			value["DIV"] == datetime.datetime.strptime(value["DIV"], "%d %b %Y").date()
+			value["DIV"] = datetime.datetime.strptime(value["DIV"], "%d %b %Y").date()
 	for key, value in treeList.items():
 		if value["MARR"] != "NA":
-			value["MARR"] == datetime.datetime.strptime(value["MARR"], "%d %b %Y").date()
+			value["MARR"] = datetime.datetime.strptime(value["MARR"], "%d %b %Y").date()
 		if value["DIV"] != "NA":	
-			value["DIV"] == datetime.datetime.strptime(value["DIV"], "%d %b %Y").date()
+			value["DIV"] = datetime.datetime.strptime(value["DIV"], "%d %b %Y").date()
 
 
 
