@@ -4,11 +4,7 @@ import datetime
 
 def printTree(treeList, individualList):
     indiTable = PrettyTable(["ID", "Name", "Gender", "Birthday", "Age", "Alive", "Death", "Child", "Spouse"])
-    columns = ["NAME", "SEX", "BIRT", "DEAT", "FAMC", "FAMS"]
     for id, args in individualList.items():
-        for col in columns:
-            if col not in args.keys():
-                args[col] = "NA"
         if args["BIRT"] is not "NA":
             birth = datetime.datetime.strptime(args["BIRT"], "%d %b %Y").date()
         else:
@@ -24,11 +20,7 @@ def printTree(treeList, individualList):
 
     famTable = PrettyTable(
         ["ID", "Married", "Divorced", "Husband ID", "Husband Name", "Wife ID", "Wife Name", "Children"])
-    columns = ["MARR", "DIV", "HUSB", "WIFE", "CHIL"]
     for id, args in treeList.items():
-        for col in columns:
-            if col not in args.keys():
-                args[col] = "NA"
         if args["HUSB"] is not "NA":
             husbName = individualList[args["HUSB"]]["NAME"]
         else:
