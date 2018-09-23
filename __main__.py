@@ -9,5 +9,5 @@ with open("familyTree.ged", "r") as file:
 # with open(sys.argv[1], "r") as file:
 #     gedcomFile = file.readlines()
 treeList, individualList = Salgado_parseGEDCOM.parse(gedcomFile)
-treeChecker.main(treeList, individualList)
 printTable.printTree(treeList, individualList)
+treeChecker.main(treeList, individualList)
