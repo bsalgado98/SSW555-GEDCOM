@@ -24,6 +24,7 @@ def getIndividualBirthdays(individualList):
     return individualBirthdays
 
 
+
 def getIndividualDeaths(individualList):
     individualDeaths = {}
     for key, value in individualList.items():
@@ -68,6 +69,35 @@ def birthBeforeDeath(individualBirthdays, individualDeaths):
         if value < individualBirthdays.get(key):
             invalidIndividuals.append(key)
     print(invalidIndividuals)
+
+def marriageBeforeDivorce(treeList):
+    invalidMarriages = []
+    for key, value in treeList.items():
+        if value["DIV"] != "NA":
+            if value["DIV"] < value["MARR"]:
+                invalidMarriages.append(key)
+    print(invalidMarriages)
+        
+
+
+
+def marriageBeforeDeath(treeList, individualList):
+    invalidMarriages= []
+    for fam, values in treeList.items():
+        if values["DIV"] is not "NA":
+            husb = values["HUSB"]
+            wife = values["WIFE"]
+            if individualList[husb]["DEAT"] is not "NA":
+                husbDeath = individualList[husb]["DEAT"]
+            else:
+                husbDeath = datetime.date(9999, 12, 31)
+            if individualList[wife]["DEAT"] is not "NA":
+                wifeDeath = individualList[wife]["DEAT"]
+            else:
+                wifeDeath = datetime.date(9999, 12, 31)
+            if husbDeath < values["MARR"] or wifeDeath < values["MARR"]:
+                invalidMarriages.append(fam)
+    print(invalidMarriages)
 
 
 def divorceBeforeDeath(treeList, individualList):
@@ -119,6 +149,9 @@ def main(treeList, individualList):
     individualDeaths = getIndividualDeaths(individualList)
     birthBeforeDeath(individualBirthdays, individualDeaths)
     marriages = getMarriages(treeList)
+    divorces = getDivorces(treeList)
     birthBeforeMarriage(individualBirthdays, marriages)
     divorceBeforeDeath(treeList, individualList)
     bigamy(treeList, individualList)
+    marriageBeforeDivorce(treeList)
+    marriageBeforeDeath(treeList, individualList)
