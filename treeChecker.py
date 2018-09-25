@@ -48,33 +48,31 @@ def getDivorces(treeList):
 
 def birthBeforeMarriage(individualBirthdays, marriages):
     invalidIndividuals = []
-#     for key, value in treeList.items():
-#         if individualBirthdays[value.get("HUSB")] > value.get("MARR"):
-#             invalidIndividuals.append(value.get("HUSB"))
-#         if individualBirthdays[value.get("WIFE")] > value.get("MARR"):
-#             invalidIndividuals.append(value.get("WIFE"))
     for key, value in marriages.items():
         if value < individualBirthdays[key[0]]:
             invalidIndividuals.append(key[0])
         if value < individualBirthdays[key[1]]:
             invalidIndividuals.append(key[1])
-    print(invalidIndividuals)
+    return invalidIndividuals
     
 def birthBeforeDeath(individualBirthdays, individualDeaths):
     invalidIndividuals = []
     for key, value in individualDeaths.items():
         if value < individualBirthdays.get(key):
             invalidIndividuals.append(key)
-    print(invalidIndividuals)
+    return invalidIndividuals
     
 def us06(treeList, individualList):
     pass
-
 
 def main(treeList, individualList):
     convertDate(treeList, individualList)
     individualBirthdays = getIndividualBirthdays(individualList)
     individualDeaths = getIndividualDeaths(individualList)
-    birthBeforeDeath(individualBirthdays, individualDeaths)
+    print("Birth before death: ")
+    print(birthBeforeDeath(individualBirthdays, individualDeaths))
     marriages = getMarriages(treeList)
-    birthBeforeMarriage(individualBirthdays, marriages)
+    print("Marriages: ")
+    print(marriages)
+    print("Birth before marriage: ")
+    print(birthBeforeMarriage(individualBirthdays, marriages))
