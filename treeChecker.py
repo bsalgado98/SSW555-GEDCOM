@@ -49,11 +49,11 @@ def getDivorces(treeList):
 
 def birthBeforeCurrentDate(individualBirthdays):
     invalidIndividuals = []
-    now = datetime.datetime.now().date()
+    now = datetime.datetime.today().date()
     for key, value in individualBirthdays.items():
         if now < individualBirthdays.get(key):
             invalidIndividuals.append(key)
-    print(invalidIndividuals)
+    return(invalidIndividuals)
 
 
 def birthBeforeMarriage(individualBirthdays, marriages):
