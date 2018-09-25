@@ -47,6 +47,14 @@ def getDivorces(treeList):
             divorces[(value.get("HUSB"), value.get("WIFE"))] = value.get("DIV")
     return divorces
 
+def birthBeforeCurrentDate(individualBirthdays):
+    invalidIndividuals = []
+    now = datetime.datetime.now().date()
+    for key, value in individualBirthdays.items():
+        if now < individualBirthdays.get(key):
+            invalidIndividuals.append(key)
+    print(invalidIndividuals)
+
 
 def birthBeforeMarriage(individualBirthdays, marriages):
     invalidIndividuals = []
@@ -78,8 +86,6 @@ def marriageBeforeDivorce(treeList):
                 invalidMarriages.append(key)
     print(invalidMarriages)
         
-
-
 
 def marriageBeforeDeath(treeList, individualList):
     invalidMarriages= []
@@ -147,6 +153,7 @@ def main(treeList, individualList):
     convertDate(treeList, individualList)
     individualBirthdays = getIndividualBirthdays(individualList)
     individualDeaths = getIndividualDeaths(individualList)
+    birthBeforeCurrentDate(individualBirthdays)
     birthBeforeDeath(individualBirthdays, individualDeaths)
     marriages = getMarriages(treeList)
     divorces = getDivorces(treeList)
