@@ -126,6 +126,8 @@ def divorceBeforeDeath(treeList, individualList):
                 print("    Divorce date: " + str(values["DIV"]))
                 print("    Husband ID: " + husb + ", Husband death: " + str(husbDeath))
                 print("    Wife ID: " + wife + ", wife death: " + str(wifeDeath))
+                return False
+    return True
 
 
 def bigamy(treeList, individualList):
@@ -143,12 +145,16 @@ def bigamy(treeList, individualList):
                     if individualList[indi]["SEX"] == "M":
                         if individualList[wife]["DEAT"] is "NA" or marriages[i + 1][0] < individualList[wife]["DEAT"]:
                             print("Warning: Individual " + indi + " has married twice before divorce or death")
+                            return False
                     else:
                         if individualList[husb]["DEAT"] is "NA" or marriages[i + 1][0] < individualList[husb]["DEAT"]:
                             print("Warning: Individual " + indi + " has married twice before divorce or death")
+                            return False
                 else:
                     if marriages[i + 1][0] < divorce:
-                        print("Warning: Individual" + indi + "has married twice before divorce")
+                        print("Warning: Individual " + indi + " has married twice before divorce")
+                        return False
+    return True
 
 def main(treeList, individualList):
     convertDate(treeList, individualList)
