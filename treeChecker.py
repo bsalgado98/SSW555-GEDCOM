@@ -71,6 +71,14 @@ def marriageBeforeCurrentDate(marriages):
             invalidMarriages.append(key)
     return(invalidMarriages)
 
+def divorcesBeforeCurrentDate(divorces):
+    invalidDivorces = []
+    now = datetime.datetime.today().date()
+    for key, value in divorces.items():
+        if now < divorces.get(key):
+            invalidDivorces.append(key)
+    return(invalidDivorces)
+
 def birthBeforeMarriage(individualBirthdays, marriages):
     invalidIndividuals = []
     #     for key, value in treeList.items():
@@ -180,6 +188,7 @@ def main(treeList, individualList):
     birthBeforeCurrentDate(individualBirthdays)
     deathBeforeCurrentDate(individualDeaths)
     marriageBeforeCurrentDate(marriages)
+    divorcesBeforeCurrentDate(divorces)
     birthBeforeDeath(individualBirthdays, individualDeaths)
     marriages = getMarriages(treeList)
     divorces = getDivorces(treeList)
