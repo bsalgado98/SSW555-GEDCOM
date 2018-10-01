@@ -1,4 +1,5 @@
 import datetime
+from datetime import timedelta
 
 supportedTags = {"INDI": 0, "NAME": 1, "SEX": 1, "BIRT": 1, "DEAT": 1, "FAMC": 1, "FAMS": 1, "FAM": 0, "MARR": 1,
                  "HUSB": 1, "WIFE": 1, "CHIL": 1, "DIV": 1, "DATE": 2, "HEAD": 0, "TRLR": 0, "NOTE": 0}
@@ -22,7 +23,6 @@ def getIndividualBirthdays(individualList):
     for key, value in individualList.items():
         individualBirthdays[key] = value.get("BIRT")
     return individualBirthdays
-
 
 
 def getIndividualDeaths(individualList):
@@ -152,6 +152,13 @@ def divorceBeforeDeath(treeList, individualList):
                 return False
     return True
 
+def ageLimit(individualBirthdays):
+    invalidAge = []
+    now = datetime.datetime.today().date()
+    for key, value in individualBirthdays.items():
+        if now - individualBirthdays.get(key) > timedelta(days=54750):
+            invalidAge.append(key)
+    return(invalidAge)
 
 def bigamy(treeList, individualList):
     for indi, values in individualList.items():
@@ -194,6 +201,7 @@ def main(treeList, individualList):
     divorces = getDivorces(treeList)
     birthBeforeMarriage(individualBirthdays, marriages)
     divorceBeforeDeath(treeList, individualList)
+    ageLimit(individualBirthdays)
     bigamy(treeList, individualList)
     marriageBeforeDivorce(treeList)
     marriageBeforeDeath(treeList, individualList)
