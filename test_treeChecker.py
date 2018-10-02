@@ -86,6 +86,78 @@ class TestTreeChecker(unittest.TestCase):
         invalid = ['I2']
         self.assertEqual(treeChecker.birthBeforeCurrentDate(birthday), invalid)
 
+    def testDeathBeforeCurrentDate(self):
+        # DEAT < Current Date True?
+        death = {'I1' : datetime.datetime.strptime('1Jan1996', '%d%b%Y').date()}
+        invalid = []
+        self.assertEqual(treeChecker.deathBeforeCurrentDate(death), invalid)
+
+        death = {'I1': datetime.datetime.strptime('14Oct1996', '%d%b%Y').date()}
+        invalid = []
+        self.assertEqual(treeChecker.deathBeforeCurrentDate(death), invalid)
+
+        # DEAT = Current Date True?
+        death = {'I1': datetime.datetime.today().date()}
+        invalid = []
+        self.assertEqual(treeChecker.deathBeforeCurrentDate(death), invalid)
+
+        # DEAT > Current Date False?
+        death = {'I1' : datetime.datetime.strptime('11Dec2047', '%d%b%Y').date()}
+        invalid = ['I1']
+        self.assertEqual(treeChecker.deathBeforeCurrentDate(death), invalid)
+
+        death = {'I2': datetime.datetime.strptime('3Jun2022', '%d%b%Y').date()}
+        invalid = ['I2']
+        self.assertEqual(treeChecker.deathBeforeCurrentDate(death), invalid)
+
+    def testMarriageBeforeCurrentDate(self):
+        # MARR < Current Date True?
+        marriage = {'I1' : datetime.datetime.strptime('1Feb1987', '%d%b%Y').date()}
+        invalid = []
+        self.assertEqual(treeChecker.marriageBeforeCurrentDate(marriage), invalid)
+
+        marriage = {'I1': datetime.datetime.strptime('29Nov1996', '%d%b%Y').date()}
+        invalid = []
+        self.assertEqual(treeChecker.marriageBeforeCurrentDate(marriage), invalid)
+
+        # MARR = Current Date True?
+        marriage = {'I1': datetime.datetime.today().date()}
+        invalid = []
+        self.assertEqual(treeChecker.marriageBeforeCurrentDate(marriage), invalid)
+
+        # MARR > Current Date False?
+        marriage = {'I1' : datetime.datetime.strptime('12Dec2177', '%d%b%Y').date()}
+        invalid = ['I1']
+        self.assertEqual(treeChecker.marriageBeforeCurrentDate(marriage), invalid)
+
+        marriage = {'I2': datetime.datetime.strptime('3May2822', '%d%b%Y').date()}
+        invalid = ['I2']
+        self.assertEqual(treeChecker.marriageBeforeCurrentDate(marriage), invalid)
+
+    def testDivorceBeforeCurrentDate(self):
+        # DIV < Current Date True?
+        divorce = {'I1' : datetime.datetime.strptime('16May1998', '%d%b%Y').date()}
+        invalid = []
+        self.assertEqual(treeChecker.divorceBeforeCurrentDate(divorce), invalid)
+
+        divorce = {'I1': datetime.datetime.strptime('21Dec2012', '%d%b%Y').date()}
+        invalid = []
+        self.assertEqual(treeChecker.divorceBeforeCurrentDate(divorce), invalid)
+
+        # DIV = Current Date True?
+        divorce = {'I1': datetime.datetime.today().date()}
+        invalid = []
+        self.assertEqual(treeChecker.divorceBeforeCurrentDate(divorce), invalid)
+
+        # DIV > Current Date False?
+        divorce = {'I1' : datetime.datetime.strptime('29Apr2777', '%d%b%Y').date()}
+        invalid = ['I1']
+        self.assertEqual(treeChecker.divorceBeforeCurrentDate(divorce), invalid)
+
+        divorce = {'I2': datetime.datetime.strptime('12May2050', '%d%b%Y').date()}
+        invalid = ['I2']
+        self.assertEqual(treeChecker.divorceBeforeCurrentDate(divorce), invalid)
+
     def test_divorceBeforeDeath01(self):
         # Test if returns True when no deaths or divorces found
         treeList = {
