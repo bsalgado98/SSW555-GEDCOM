@@ -197,12 +197,12 @@ def main(treeList, individualList):
     
     birthBeforeCurrentDate(individualBirthdays)
     deathBeforeCurrentDate(individualDeaths)
-    marriageBeforeCurrentDate(marriages)
-    divorcesBeforeCurrentDate(divorces)
+    print("Invalid cases for marriage before current date: " + str(marriageBeforeCurrentDate(marriages)))
+    print("Invalid cases for divorces before current date: " + str(divorcesBeforeCurrentDate(divorces)))
     birthBeforeDeath(individualBirthdays, individualDeaths)
     birthBeforeMarriage(individualBirthdays, marriages)
-    divorceBeforeDeath(treeList, individualList)
-    ageLimit(individualBirthdays)
+    print("Invalid cases for divorce before death: " + str(divorceBeforeDeath(treeList, individualList)))
+    print("Invalid cases for age limit: "+ str(ageLimit(individualBirthdays)))
     bigamy(treeList, individualList)
     print("Invalid cases for marriage before divorce: " + str(marriageBeforeDivorce(treeList)))
     print("Invalid cases for marriage before death: " + str(marriageBeforeDeath(treeList, individualList)))
@@ -212,3 +212,6 @@ def main(treeList, individualList):
     print("Invalid cases for birth before marriage: " + str(birthBeforeMarriage(individualBirthdays, marriages)))
     print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
     print()
+
+
+
