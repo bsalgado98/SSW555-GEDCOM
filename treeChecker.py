@@ -109,7 +109,7 @@ def marriageBeforeDivorce(treeList):
         if value["DIV"] != "NA":
             if value["DIV"] < value["MARR"]:
                 invalidMarriages.append(key)
-    print(invalidMarriages)
+    return invalidMarriages
         
 
 def marriageBeforeDeath(treeList, individualList):
@@ -128,7 +128,7 @@ def marriageBeforeDeath(treeList, individualList):
                 wifeDeath = datetime.date(9999, 12, 31)
             if husbDeath < values["MARR"] or wifeDeath < values["MARR"]:
                 invalidMarriages.append(fam)
-    print(invalidMarriages)
+    return invalidMarriages
 
 
 def divorceBeforeDeath(treeList, individualList):
@@ -203,5 +203,6 @@ def main(treeList, individualList):
     divorceBeforeDeath(treeList, individualList)
     ageLimit(individualBirthdays)
     bigamy(treeList, individualList)
-    marriageBeforeDivorce(treeList)
-    marriageBeforeDeath(treeList, individualList)
+    print("Invalid cases for marriage before divorce: " + str(marriageBeforeDivorce(treeList)))
+    print("Invalid cases for marriage before death: " + str(marriageBeforeDeath(treeList, individualList)))
+    print()
