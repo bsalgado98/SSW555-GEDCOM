@@ -132,6 +132,7 @@ def marriageBeforeDeath(treeList, individualList):
 
 
 def divorceBeforeDeath(treeList, individualList):
+    invalid = []
     for fam, values in treeList.items():
         if values["DIV"] is not "NA":
             husb = values["HUSB"]
@@ -145,12 +146,12 @@ def divorceBeforeDeath(treeList, individualList):
             else:
                 wifeDeath = datetime.date(9999, 12, 31)
             if husbDeath < values["DIV"] or wifeDeath < values["DIV"]:
-                print("Warning: Family " + fam + " has a divorce occurring after the death of a spouse")
-                print("    Divorce date: " + str(values["DIV"]))
-                print("    Husband ID: " + husb + ", Husband death: " + str(husbDeath))
-                print("    Wife ID: " + wife + ", wife death: " + str(wifeDeath))
-                return False
-    return True
+                # print("Warning: Family " + fam + " has a divorce occurring after the death of a spouse")
+                # print("    Divorce date: " + str(values["DIV"]))
+                # print("    Husband ID: " + husb + ", Husband death: " + str(husbDeath))
+                # print("    Wife ID: " + wife + ", wife death: " + str(wifeDeath))
+                invalid.append(fam)
+    return invalid
 
 def ageLimit(individualBirthdays):
     invalidAge = []
@@ -161,6 +162,7 @@ def ageLimit(individualBirthdays):
     return(invalidAge)
 
 def bigamy(treeList, individualList):
+    invalid = []
     for indi, values in individualList.items():
         if isinstance(values["FAMS"], list):
             marriages = []
@@ -174,17 +176,17 @@ def bigamy(treeList, individualList):
                 if divorce is "NA":
                     if individualList[indi]["SEX"] == "M":
                         if individualList[wife]["DEAT"] is "NA" or marriages[i + 1][0] < individualList[wife]["DEAT"]:
-                            print("Warning: Individual " + indi + " has married twice before divorce or death")
-                            return False
+                            # print("Warning: Individual " + indi + " has married twice before divorce or death")
+                            invalid.append(indi)
                     else:
                         if individualList[husb]["DEAT"] is "NA" or marriages[i + 1][0] < individualList[husb]["DEAT"]:
-                            print("Warning: Individual " + indi + " has married twice before divorce or death")
-                            return False
+                            # print("Warning: Individual " + indi + " has married twice before divorce or death")
+                            invalid.append(indi)
                 else:
                     if marriages[i + 1][0] < divorce:
-                        print("Warning: Individual " + indi + " has married twice before divorce")
-                        return False
-    return True
+                        # print("Warning: Individual " + indi + " has married twice before divorce")
+                        invalid.append(indi)
+    return invalid
 
 def main(treeList, individualList):
     convertDate(treeList, individualList)

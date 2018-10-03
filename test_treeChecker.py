@@ -172,7 +172,7 @@ class TestTreeChecker(unittest.TestCase):
             "I1": {"DEAT": "NA"},
             "I2": {"DEAT": "NA"}
         }
-        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), True)
+        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), [])
 
     def test_divorceBeforeDeath02(self):
         # Test if returns True when no deaths but a valid divorce is found
@@ -187,7 +187,7 @@ class TestTreeChecker(unittest.TestCase):
             "I1": {"DEAT": "NA"},
             "I2": {"DEAT": "NA"}
         }
-        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), True)
+        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), [])
 
     def test_divorceBeforeDeath03(self):
         # Test if returns True when valid deaths and divorces are found
@@ -202,7 +202,7 @@ class TestTreeChecker(unittest.TestCase):
             "I1": {"DEAT": datetime.date(9999, 1, 1)},
             "I2": {"DEAT": datetime.date(9999, 1, 1)}
         }
-        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), True)
+        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), [])
 
     def test_divorceBeforeDeath04(self):
         # Test if returns False when an invalid divorce is found due to the husband's death
@@ -217,7 +217,7 @@ class TestTreeChecker(unittest.TestCase):
             "I1": {"DEAT": datetime.date(1, 1, 1)},
             "I2": {"DEAT": "NA"}
         }
-        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), False)
+        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), ["F1"])
 
     def test_divorceBeforeDeath05(self):
         # Test if returns False when an invalid divorce is found due to the wife's death
@@ -232,7 +232,7 @@ class TestTreeChecker(unittest.TestCase):
             "I1": {"DEAT": "NA"},
             "I2": {"DEAT": datetime.date(1, 1, 1)}
         }
-        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), False)
+        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), ["F1"])
 
     def testAgeLimit(self):
         # Age < 150 years True?
@@ -272,7 +272,7 @@ class TestTreeChecker(unittest.TestCase):
             "I1": {"FAMS": "F1"},
             "I2": {"FAMS": "F1"}
         }
-        self.assertEqual(treeChecker.bigamy(treeList, individualList), True)
+        self.assertEqual(treeChecker.bigamy(treeList, individualList), [])
 
     def test_bigamy02(self):
         # Test if returns False when bigamy with no divorces is found
@@ -307,7 +307,7 @@ class TestTreeChecker(unittest.TestCase):
                 "FAMS": "F2",
             }
         }
-        self.assertEqual(treeChecker.bigamy(treeList, individualList), False)
+        self.assertEqual(treeChecker.bigamy(treeList, individualList), ["I1"])
 
     def test_bigamy03(self):
         # Test if returns False when bigamy with divorces is found
@@ -342,7 +342,7 @@ class TestTreeChecker(unittest.TestCase):
                 "FAMS": "F2",
             }
         }
-        self.assertEqual(treeChecker.bigamy(treeList, individualList), False)
+        self.assertEqual(treeChecker.bigamy(treeList, individualList), ["I1"])
 
     def test_bigamy04(self):
         # Test if returns False when bigamy with deaths is found
@@ -377,7 +377,7 @@ class TestTreeChecker(unittest.TestCase):
                 "FAMS": "F2",
             }
         }
-        self.assertEqual(treeChecker.bigamy(treeList, individualList), False)
+        self.assertEqual(treeChecker.bigamy(treeList, individualList), ["I1"])
 
 
 
@@ -414,7 +414,7 @@ class TestTreeChecker(unittest.TestCase):
                 "FAMS": "F2",
             }
         }
-        self.assertEqual(treeChecker.bigamy(treeList, individualList), False)
+        self.assertEqual(treeChecker.bigamy(treeList, individualList), ["I1"])
 
 if __name__ == '__main__':
     print('Running Unit Tests')
