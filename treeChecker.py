@@ -1,7 +1,5 @@
 import datetime
-from _datetime import date, datetime
-from test.test_optparse import _time_units
-from lib2to3.fixer_util import Number
+from datetime import timedelta
 
 supportedTags = {"INDI": 0, "NAME": 1, "SEX": 1, "BIRT": 1, "DEAT": 1, "FAMC": 1, "FAMS": 1, "FAM": 0, "MARR": 1,
                  "HUSB": 1, "WIFE": 1, "CHIL": 1, "DIV": 1, "DATE": 2, "HEAD": 0, "TRLR": 0, "NOTE": 0}
@@ -25,7 +23,6 @@ def getIndividualBirthdays(individualList):
     for key, value in individualList.items():
         individualBirthdays[key] = value.get("BIRT")
     return individualBirthdays
-
 
 
 def getIndividualDeaths(individualList):
@@ -52,12 +49,35 @@ def getDivorces(treeList):
 
 def birthBeforeCurrentDate(individualBirthdays):
     invalidIndividuals = []
-    now = datetime.datetime.now().date()
+    now = datetime.datetime.today().date()
     for key, value in individualBirthdays.items():
         if now < individualBirthdays.get(key):
             invalidIndividuals.append(key)
-    print(invalidIndividuals)
+    return(invalidIndividuals)
 
+def deathBeforeCurrentDate(individualDeaths):
+    invalidIndividuals = []
+    now = datetime.datetime.today().date()
+    for key, value in individualDeaths.items():
+        if now < individualDeaths.get(key):
+            invalidIndividuals.append(key)
+    return(invalidIndividuals)
+
+def marriageBeforeCurrentDate(marriages):
+    invalidMarriages = []
+    now = datetime.datetime.today().date()
+    for key, value in marriages.items():
+        if now < marriages.get(key):
+            invalidMarriages.append(key)
+    return(invalidMarriages)
+
+def divorcesBeforeCurrentDate(divorces):
+    invalidDivorces = []
+    now = datetime.datetime.today().date()
+    for key, value in divorces.items():
+        if now < divorces.get(key):
+            invalidDivorces.append(key)
+    return(invalidDivorces)
 
 def birthBeforeMarriage(individualBirthdays, marriages):
     invalidIndividuals = []
@@ -89,7 +109,7 @@ def marriageBeforeDivorce(treeList):
         if value["DIV"] != "NA":
             if value["DIV"] < value["MARR"]:
                 invalidMarriages.append(key)
-    print(invalidMarriages)
+    return invalidMarriages
         
 
 def marriageBeforeDeath(treeList, individualList):
@@ -108,10 +128,11 @@ def marriageBeforeDeath(treeList, individualList):
                 wifeDeath = datetime.date(9999, 12, 31)
             if husbDeath < values["MARR"] or wifeDeath < values["MARR"]:
                 invalidMarriages.append(fam)
-    print(invalidMarriages)
+    return invalidMarriages
 
 
 def divorceBeforeDeath(treeList, individualList):
+    invalid = []
     for fam, values in treeList.items():
         if values["DIV"] is not "NA":
             husb = values["HUSB"]
@@ -125,13 +146,23 @@ def divorceBeforeDeath(treeList, individualList):
             else:
                 wifeDeath = datetime.date(9999, 12, 31)
             if husbDeath < values["DIV"] or wifeDeath < values["DIV"]:
-                print("Warning: Family " + fam + " has a divorce occurring after the death of a spouse")
-                print("    Divorce date: " + str(values["DIV"]))
-                print("    Husband ID: " + husb + ", Husband death: " + str(husbDeath))
-                print("    Wife ID: " + wife + ", wife death: " + str(wifeDeath))
+                # print("Warning: Family " + fam + " has a divorce occurring after the death of a spouse")
+                # print("    Divorce date: " + str(values["DIV"]))
+                # print("    Husband ID: " + husb + ", Husband death: " + str(husbDeath))
+                # print("    Wife ID: " + wife + ", wife death: " + str(wifeDeath))
+                invalid.append(fam)
+    return invalid
 
+def ageLimit(individualBirthdays):
+    invalidAge = []
+    now = datetime.datetime.today().date()
+    for key, value in individualBirthdays.items():
+        if now - individualBirthdays.get(key) > timedelta(days=54750):
+            invalidAge.append(key)
+    return(invalidAge)
 
 def bigamy(treeList, individualList):
+    invalid = []
     for indi, values in individualList.items():
         if isinstance(values["FAMS"], list):
             marriages = []
@@ -145,44 +176,39 @@ def bigamy(treeList, individualList):
                 if divorce is "NA":
                     if individualList[indi]["SEX"] == "M":
                         if individualList[wife]["DEAT"] is "NA" or marriages[i + 1][0] < individualList[wife]["DEAT"]:
-                            print("Warning: Individual " + indi + " has married twice before divorce or death")
+                            # print("Warning: Individual " + indi + " has married twice before divorce or death")
+                            invalid.append(indi)
                     else:
                         if individualList[husb]["DEAT"] is "NA" or marriages[i + 1][0] < individualList[husb]["DEAT"]:
-                            print("Warning: Individual " + indi + " has married twice before divorce or death")
+                            # print("Warning: Individual " + indi + " has married twice before divorce or death")
+                            invalid.append(indi)
                 else:
                     if marriages[i + 1][0] < divorce:
-                        print("Warning: Individual" + indi + "has married twice before divorce")
-
-def us07_too_old(bd):
-    pass
-
-
-def us35_recent_birth(bd):
-    #Return true if the specified birthdate is within te last 150 years
-        bd: a datetime representing the persons birth date
-    return
-
-def us43_siblings_9_months_apart(bd1, bd2):
-    #Return true if bd1 is less than 9 months from bd2
-    bd1: a datetime representing a persons birth date
-    bd2: a datetime representing a persons birth date
-    
-def dates_within(date1, date2, limit, units):
-    #Return true if date1 and date2 are within limit units, where:
-    date1, date2 are instances of datetime
-    limit is a Number
-    untis is a string in (days, months, years)
+                        # print("Warning: Individual " + indi + " has married twice before divorce")
+                        invalid.append(indi)
+    return invalid
 
 def main(treeList, individualList):
     convertDate(treeList, individualList)
     individualBirthdays = getIndividualBirthdays(individualList)
     individualDeaths = getIndividualDeaths(individualList)
-    birthBeforeCurrentDate(individualBirthdays)
-    birthBeforeDeath(individualBirthdays, individualDeaths)
     marriages = getMarriages(treeList)
     divorces = getDivorces(treeList)
-    birthBeforeMarriage(individualBirthdays, marriages)
-    divorceBeforeDeath(treeList, individualList)
-    bigamy(treeList, individualList)
-    marriageBeforeDivorce(treeList)
-    marriageBeforeDeath(treeList, individualList)
+    
+    birthBeforeCurrentDate(individualBirthdays)
+    deathBeforeCurrentDate(individualDeaths)
+    print("Invalid cases for marriage before current date: " + str(marriageBeforeCurrentDate(marriages)))
+    print("Invalid cases for divorce before current date: " + str(divorcesBeforeCurrentDate(divorces)))
+    print("Invalid cases for birth before death: " + str(birthBeforeDeath(individualBirthdays, individualDeaths)))
+    print("invalid cases for birth before marriage: " + str(birthBeforeMarriage(individualBirthdays, marriages)))
+    print("Invalid cases for divorce before death: " + str(divorceBeforeDeath(treeList, individualList)))
+    print("Invalid cases for age limit: "+ str(ageLimit(individualBirthdays)))
+    print("Invalid cases for marriage before divorce: " + str(marriageBeforeDivorce(treeList)))
+    print("Invalid cases for marriage before death: " + str(marriageBeforeDeath(treeList, individualList)))
+    print("Invalid cases for birth before current date: " + str(birthBeforeCurrentDate(individualBirthdays)))
+    print("Invalid cases for death before current date: " + str(deathBeforeCurrentDate(individualDeaths)))
+    print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
+    print()
+
+
+
