@@ -1,4 +1,7 @@
 import datetime
+from _datetime import date, datetime
+from test.test_optparse import _time_units
+from lib2to3.fixer_util import Number
 
 supportedTags = {"INDI": 0, "NAME": 1, "SEX": 1, "BIRT": 1, "DEAT": 1, "FAMC": 1, "FAMS": 1, "FAM": 0, "MARR": 1,
                  "HUSB": 1, "WIFE": 1, "CHIL": 1, "DIV": 1, "DATE": 2, "HEAD": 0, "TRLR": 0, "NOTE": 0}
@@ -149,6 +152,26 @@ def bigamy(treeList, individualList):
                 else:
                     if marriages[i + 1][0] < divorce:
                         print("Warning: Individual" + indi + "has married twice before divorce")
+
+def us07_too_old(bd):
+    pass
+
+
+def us35_recent_birth(bd):
+    #Return true if the specified birthdate is within te last 150 years
+        bd: a datetime representing the persons birth date
+    return
+
+def us43_siblings_9_months_apart(bd1, bd2):
+    #Return true if bd1 is less than 9 months from bd2
+    bd1: a datetime representing a persons birth date
+    bd2: a datetime representing a persons birth date
+    
+def dates_within(date1, date2, limit, units):
+    #Return true if date1 and date2 are within limit units, where:
+    date1, date2 are instances of datetime
+    limit is a Number
+    untis is a string in (days, months, years)
 
 def main(treeList, individualList):
     convertDate(treeList, individualList)
