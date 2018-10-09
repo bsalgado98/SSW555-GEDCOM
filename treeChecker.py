@@ -6,6 +6,7 @@ supportedTags = {"INDI": 0, "NAME": 1, "SEX": 1, "BIRT": 1, "DEAT": 1, "FAMC": 1
 
 
 def convertDate(treeList, individualList):
+    """Coverts Dates in Individual and Tree Lists yo Datetime Objects"""
     for key, value in individualList.items():
         if value["BIRT"] != "NA":
             value["BIRT"] = datetime.datetime.strptime(value["BIRT"], "%d %b %Y").date()
@@ -19,6 +20,7 @@ def convertDate(treeList, individualList):
 
 
 def getIndividualBirthdays(individualList):
+    """Make a Birthdays List to Utilize"""
     individualBirthdays = {}
     for key, value in individualList.items():
         individualBirthdays[key] = value.get("BIRT")
@@ -26,6 +28,7 @@ def getIndividualBirthdays(individualList):
 
 
 def getIndividualDeaths(individualList):
+    """Make a Deaths List to Utilize"""
     individualDeaths = {}
     for key, value in individualList.items():
         if value.get("DEAT") != "NA":
@@ -34,6 +37,7 @@ def getIndividualDeaths(individualList):
 
 
 def getMarriages(treeList):
+    """Make a Marriages List to Utilize"""
     marriages = {}
     for key, value in treeList.items():
         marriages[(value.get("HUSB"), value.get("WIFE"))] = value.get("MARR")
@@ -41,45 +45,55 @@ def getMarriages(treeList):
 
 
 def getDivorces(treeList):
+    """Make a Divorces List toi Utilize"""
     divorces = {}
     for key, value in treeList.items():
         if value.get("DIV") != "NA":
             divorces[(value.get("HUSB"), value.get("WIFE"))] = value.get("DIV")
     return divorces
 
-def birthBeforeCurrentDate(individualBirthdays):
-    invalidIndividuals = []
+def setCurrentDate():
     now = datetime.datetime.today().date()
+    return(now)
+
+def birthBeforeCurrentDate(individualBirthdays):
+    """Returns a List of Invalid Birthdays that are After Current Date"""
+    invalidBirthdays = []
+    now = setCurrentDate()
     for key, value in individualBirthdays.items():
         if now < individualBirthdays.get(key):
-            invalidIndividuals.append(key)
-    return(invalidIndividuals)
+           invalidBirthdays.append(key)
+    return(invalidBirthdays)
 
 def deathBeforeCurrentDate(individualDeaths):
-    invalidIndividuals = []
-    now = datetime.datetime.today().date()
+    """Returns a List of Invalid Deaths that are After Current Date"""
+    invalidDeaths = []
+    now = setCurrentDate()
     for key, value in individualDeaths.items():
         if now < individualDeaths.get(key):
-            invalidIndividuals.append(key)
-    return(invalidIndividuals)
+            invalidDeaths.append(key)
+    return(invalidDeaths)
 
 def marriageBeforeCurrentDate(marriages):
+    """Returns a List of Invalid Marriages that are After Current Date"""
     invalidMarriages = []
-    now = datetime.datetime.today().date()
+    now = setCurrentDate()
     for key, value in marriages.items():
         if now < marriages.get(key):
             invalidMarriages.append(key)
     return(invalidMarriages)
 
 def divorcesBeforeCurrentDate(divorces):
+    """Returns a List of Invalid Divorces that are After Current Date"""
     invalidDivorces = []
-    now = datetime.datetime.today().date()
+    now = setCurrentDate()
     for key, value in divorces.items():
         if now < divorces.get(key):
             invalidDivorces.append(key)
     return(invalidDivorces)
 
 def birthBeforeMarriage(individualBirthdays, marriages):
+    """Returns a List of Invalid Births that are After Marriage Date"""
     invalidIndividuals = []
     #     for key, value in treeList.items():
     #         if individualBirthdays[value.get("HUSB")] > value.get("MARR"):
@@ -94,6 +108,7 @@ def birthBeforeMarriage(individualBirthdays, marriages):
     return invalidIndividuals
     
 def birthBeforeDeath(individualBirthdays, individualDeaths):
+    """Returns a List of Invalid Births that are After Death Date"""
     invalidIndividuals = []
     for key, value in individualDeaths.items():
         if value < individualBirthdays.get(key):
@@ -104,6 +119,7 @@ def us06(treeList, individualList):
     pass
 
 def marriageBeforeDivorce(treeList):
+    """Returns a List of Invalid Marriages that are After Divorce Date"""
     invalidMarriages = []
     for key, value in treeList.items():
         if value["DIV"] != "NA":
@@ -113,6 +129,7 @@ def marriageBeforeDivorce(treeList):
         
 
 def marriageBeforeDeath(treeList, individualList):
+    """Returns a List of Invalid Marriages that are After Death Date"""
     invalidMarriages= []
     for fam, values in treeList.items():
         if values["DIV"] is not "NA":
@@ -132,6 +149,7 @@ def marriageBeforeDeath(treeList, individualList):
 
 
 def divorceBeforeDeath(treeList, individualList):
+    """Returns a List of Invalid Divorces that are After Death Date"""
     invalid = []
     for fam, values in treeList.items():
         if values["DIV"] is not "NA":
@@ -154,14 +172,16 @@ def divorceBeforeDeath(treeList, individualList):
     return invalid
 
 def ageLimit(individualBirthdays):
+    """Returns a List of Invalid Ages that are Greater Than 150"""
     invalidAge = []
-    now = datetime.datetime.today().date()
+    now = setCurrentDate()
     for key, value in individualBirthdays.items():
         if now - individualBirthdays.get(key) > timedelta(days=54750):
             invalidAge.append(key)
     return(invalidAge)
 
 def bigamy(treeList, individualList):
+    """Returns a List of Invalid Marriages if Married to Another Person Already"""
     invalid = []
     for indi, values in individualList.items():
         if isinstance(values["FAMS"], list):
