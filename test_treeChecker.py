@@ -278,7 +278,9 @@ class TestTreeChecker(unittest.TestCase):
             "I1": {"FAMS": "F1"},
             "I2": {"FAMS": "F1"}
         }
-        self.assertEqual(treeChecker.bigamy(treeList, individualList), [])
+        individualDeaths = treeChecker.getIndividualDeaths(individualList)
+        divorces = treeChecker.getDivorces(treeList)
+        self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), [])
 
     def test_bigamy02(self):
         # Test if returns False when bigamy with no divorces is found
@@ -313,7 +315,9 @@ class TestTreeChecker(unittest.TestCase):
                 "FAMS": "F2",
             }
         }
-        self.assertEqual(treeChecker.bigamy(treeList, individualList), ["I1"])
+        individualDeaths = treeChecker.getIndividualDeaths(individualList)
+        divorces = treeChecker.getDivorces(treeList)
+        self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), ["I1"])
 
     def test_bigamy03(self):
         # Test if returns False when bigamy with divorces is found
@@ -348,7 +352,9 @@ class TestTreeChecker(unittest.TestCase):
                 "FAMS": "F2",
             }
         }
-        self.assertEqual(treeChecker.bigamy(treeList, individualList), ["I1"])
+        individualDeaths = treeChecker.getIndividualDeaths(individualList)
+        divorces = treeChecker.getDivorces(treeList)
+        self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), ["I1"])
 
     def test_bigamy04(self):
         # Test if returns False when bigamy with deaths is found
@@ -383,7 +389,9 @@ class TestTreeChecker(unittest.TestCase):
                 "FAMS": "F2",
             }
         }
-        self.assertEqual(treeChecker.bigamy(treeList, individualList), ["I1"])
+        individualDeaths = treeChecker.getIndividualDeaths(individualList)
+        divorces = treeChecker.getDivorces(treeList)
+        self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), ["I1"])
 
     def test_bigamy05(self):
         # Test if returns False when bigamy with both divorce and death is found
@@ -418,7 +426,9 @@ class TestTreeChecker(unittest.TestCase):
                 "FAMS": "F2",
             }
         }
-        self.assertEqual(treeChecker.bigamy(treeList, individualList), ["I1"])
+        individualDeaths = treeChecker.getIndividualDeaths(individualList)
+        divorces = treeChecker.getDivorces(treeList)
+        self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), ["I1"])
 
 
 if __name__ == '__main__':

@@ -114,9 +114,7 @@ def birthBeforeDeath(individualBirthdays, individualDeaths):
         if value < individualBirthdays.get(key):
             invalidIndividuals.append(key)
     return invalidIndividuals
-    
-def us06(treeList, individualList):
-    pass
+
 
 def marriageBeforeDivorce(treeList):
     """Returns a List of Invalid Marriages that are After Divorce Date"""
@@ -180,7 +178,7 @@ def ageLimit(individualBirthdays):
             invalidAge.append(key)
     return(invalidAge)
 
-def bigamy(treeList, individualList):
+def bigamy(treeList, individualList, individualDeaths, divorces):
     """Returns a List of Invalid Marriages if Married to Another Person Already"""
     invalid = []
     for indi, values in individualList.items():
@@ -188,22 +186,21 @@ def bigamy(treeList, individualList):
             marriages = []
             for fam in values["FAMS"]:
                 marriages += [(treeList[fam]["MARR"], fam)]
-            marriages = sorted(marriages, key=lambda x: x[0])
+            marriages = sorted(marriages, key=lambda x: x[0])  # Sorts these marriages from earliest to latest
             for i in range(len(marriages) - 1):
                 husb = treeList[marriages[i][1]]["HUSB"]
                 wife = treeList[marriages[i][1]]["WIFE"]
-                divorce = treeList[marriages[i][1]]["DIV"]
-                if divorce is "NA":
+                if marriages[i][1] not in divorces.keys():
                     if individualList[indi]["SEX"] == "M":
-                        if individualList[wife]["DEAT"] is "NA" or marriages[i + 1][0] < individualList[wife]["DEAT"]:
+                        if wife not in individualDeaths.keys() or marriages[i + 1][0] < individualDeaths[wife]:
                             # print("Warning: Individual " + indi + " has married twice before divorce or death")
                             invalid.append(indi)
                     else:
-                        if individualList[husb]["DEAT"] is "NA" or marriages[i + 1][0] < individualList[husb]["DEAT"]:
+                        if husb not in individualDeaths.keys() or marriages[i + 1][0] < individualDeaths[husb]:
                             # print("Warning: Individual " + indi + " has married twice before divorce or death")
                             invalid.append(indi)
                 else:
-                    if marriages[i + 1][0] < divorce:
+                    if marriages[i + 1][0] < divorces[marriages[i][1]]:
                         # print("Warning: Individual " + indi + " has married twice before divorce")
                         invalid.append(indi)
     return invalid
