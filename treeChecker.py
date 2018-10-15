@@ -205,15 +205,29 @@ def bigamy(treeList, individualList, individualDeaths, divorces):
                         invalid.append(indi)
     return invalid
 
+def marriageAfter14(individualBirthdays, marriages):
+    """Returns a List of invalid marriages... husband or wife was marriage younger than 14"""
+    invalidIndividuals = []
+    for key, value in marriages.items():
+        if int((str(value - individualBirthdays[key[0]])).split(" ")[0])/365 < 14:
+            if key[0] not in invalidIndividuals:
+                    invalidIndividuals.append(key[0])
+        if int((str(value - individualBirthdays[key[1]])).split(" ")[0])/365 < 14:
+                if key[1] not in invalidIndividuals:
+                    invalidIndividuals.append(key[1])    
+    return invalidIndividuals
+
 def main(treeList, individualList):
     convertDate(treeList, individualList)
     individualBirthdays = getIndividualBirthdays(individualList)
     individualDeaths = getIndividualDeaths(individualList)
     marriages = getMarriages(treeList)
     divorces = getDivorces(treeList)
+    print(marriageAfter14(individualBirthdays, marriages))
     
     birthBeforeCurrentDate(individualBirthdays)
     deathBeforeCurrentDate(individualDeaths)
+
     print("Invalid cases for marriage before current date: " + str(marriageBeforeCurrentDate(marriages)))
     print("Invalid cases for divorce before current date: " + str(divorcesBeforeCurrentDate(divorces)))
     print("Invalid cases for birth before death: " + str(birthBeforeDeath(individualBirthdays, individualDeaths)))
@@ -224,7 +238,8 @@ def main(treeList, individualList):
     print("Invalid cases for marriage before death: " + str(marriageBeforeDeath(treeList, individualList)))
     print("Invalid cases for birth before current date: " + str(birthBeforeCurrentDate(individualBirthdays)))
     print("Invalid cases for death before current date: " + str(deathBeforeCurrentDate(individualDeaths)))
-    print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
+    #print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
+    print("Invalid cases for marriage after 14 years old: " + str(marriageAfter14(individualBirthdays, marriages)))
     print()
 
 
