@@ -2,3 +2,4 @@
 .pydevproject
 .idea
 __pycache__
+gedcom.db
