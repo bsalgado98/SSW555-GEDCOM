@@ -217,14 +217,26 @@ def marriageAfter14(individualBirthdays, marriages):
                     invalidIndividuals.append(key[1])    
     return invalidIndividuals
 
+def parentsNotTooOld(treeList, individualList, individualBirthdays):
+    invalidIndividuals = []
+    for fam, values in treeList.items():
+        husb = values["HUSB"]
+        wife = values["WIFE"]
+        children = values["CHIL"]
+        for child in children:
+            if len(child) > 1:
+                if int((str(individualBirthdays[husb] - individualBirthdays[child])).split(" ")[0])/365 > 80 :
+                    invalidIndividuals.append(husb)
+                if int((str(individualBirthdays[wife] - individualBirthdays[child])).split(" ")[0])/365 > 60 :
+                    invalidIndividuals.append(wife) 
+    return invalidIndividuals
+
 def main(treeList, individualList):
     convertDate(treeList, individualList)
     individualBirthdays = getIndividualBirthdays(individualList)
     individualDeaths = getIndividualDeaths(individualList)
     marriages = getMarriages(treeList)
-    divorces = getDivorces(treeList)
-    print(marriageAfter14(individualBirthdays, marriages))
-    
+    divorces = getDivorces(treeList)    
     birthBeforeCurrentDate(individualBirthdays)
     deathBeforeCurrentDate(individualDeaths)
 
@@ -240,6 +252,7 @@ def main(treeList, individualList):
     print("Invalid cases for death before current date: " + str(deathBeforeCurrentDate(individualDeaths)))
     #print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
     print("Invalid cases for marriage after 14 years old: " + str(marriageAfter14(individualBirthdays, marriages)))
+    print("Invalid cases for parents not too old: " + str(parentsNotTooOld(treeList, individualList, individualBirthdays)))
     print()
 
 
