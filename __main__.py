@@ -19,3 +19,4 @@ def runTreeChecker(treeList, individualList):
 if __name__ == "__main__":
     treeList, individualList = Salgado_parseGEDCOM.parse(gedcomFile)
     runTreeChecker(treeList, individualList)
+    printTable.printTree(treeList, individualList)

@@ -188,6 +188,9 @@ def bigamy(treeList, individualList):
                         invalid.append(indi)
     return invalid
 
+def siblingsSpacing():
+    pass
+
 def main(treeList, individualList):
     convertDate(treeList, individualList)
     individualBirthdays = getIndividualBirthdays(individualList)
