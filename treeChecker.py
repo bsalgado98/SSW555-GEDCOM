@@ -226,12 +226,9 @@ def birthBeforeParentsDeath(treeList, individualList, individualBirthdays):
     for fam, values in treeList.items():
         husb = values["HUSB"]
         fatherDeath = individualList[husb]["DEAT"]
-        # print(fatherDeath)
         wife = values["WIFE"]
         motherDeath = individualList[wife]["DEAT"]
-        # print(motherDeath)
         children = values["CHIL"]
-        # print(children)
         if isinstance(values["CHIL"], list):
             for child in children:
                 if fatherDeath is not "NA" and individualBirthdays[child] > (fatherDeath + timedelta(days=266)):
