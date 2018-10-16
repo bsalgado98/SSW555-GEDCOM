@@ -192,16 +192,38 @@ def bigamy(treeList, individualList):
 def siblingsSpacing(treeList, individualBirthdays):
     invalid = []
     siblings = []
+    twoDays = datetime.timedelta(days = 2)
+    eightMonths = datetime.timedelta(days = 243.334)
+    birthdayDifference = 0
     for fam, values in treeList.items():
         if isinstance(values["CHIL"], list):
             siblings.append(values["CHIL"])
     for i in range(len(siblings)):
         for j in range(len(siblings[i])):
-            for k in range(j+1, len(siblings[i][j]) - j):
-                #if(individualBirthdays[i] - individualBirthdays[j]):
-                print(individualBirthdays[siblings[i][j]])
-                print(individualBirthdays[siblings[i][k]])
-            
+            for k in range(j+1, len(siblings[i])):
+                birthdayDifference = abs(individualBirthdays[siblings[i][j]] - individualBirthdays[siblings[i][k]])
+                if(birthdayDifference > twoDays and birthdayDifference < eightMonths):
+                    invalid.append(siblings[i][j] + " and " + siblings[i][k])
+    return invalid
+
+def multipleBirths(treeList, individualBirthdays):
+    invalid = []
+    siblings = []
+    for fam, values in treeList.items():
+        if isinstance(values["CHIL"], list):
+            if(len(values["CHIL"]) > 5):
+                siblings.append(values["CHIL"])
+    repeatingBirthdays = {individualBirthdays[siblings[0][0]] : [siblings[0][0]]}
+    for i in range(len(siblings)):
+        for j in range(1, len(siblings[i])):
+            if(individualBirthdays[siblings[i][j]] in repeatingBirthdays.keys()):
+                repeatingBirthdays.get(individualBirthdays[siblings[i][j]]).append(siblings[i][j])
+            else:
+                repeatingBirthdays[individualBirthdays[siblings[i][j]]] = [siblings[i][j]] 
+    for key, value in repeatingBirthdays.items():
+        if(len(value) > 5):
+            invalid.append("Invalid siblings: " + str(value))
+    return invalid
 
 def main(treeList, individualList):
     convertDate(treeList, individualList)
@@ -223,7 +245,8 @@ def main(treeList, individualList):
     print("Invalid cases for birth before current date: " + str(birthBeforeCurrentDate(individualBirthdays)))
     print("Invalid cases for death before current date: " + str(deathBeforeCurrentDate(individualDeaths)))
     print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
-    print(siblingsSpacing(treeList, individualBirthdays))
+    print("Invalid cases for siblings spacing (US13): " + str(siblingsSpacing(treeList, individualBirthdays)))
+    print("Invalid cases for multiple births (US14): " + str(multipleBirths(treeList, individualBirthdays)))
     print()
 
 

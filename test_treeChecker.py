@@ -416,6 +416,16 @@ class TestTreeChecker(unittest.TestCase):
         }
         self.assertEqual(treeChecker.bigamy(treeList, individualList), ["I1"])
 
+    def test_siblingsSpacing(self):
+        treeList = {"TEST_FAMILY1" : {"CHIL" : ["A", "B"]}, "TEST_FAMILY2" : {"CHIL" : ["C", "D", "E"]}}
+        individualBirthdays = {"A" : datetime.date(1, 1, 1), "B" : datetime.date(1, 1, 2), "C" : datetime.date(1, 1, 1), "D" : datetime.date(1, 1, 6), "E" : datetime.date(1, 1, 10)}
+        self.assertEqual(treeChecker.siblingsSpacing(treeList, individualBirthdays), ['C and D', 'C and E', 'D and E'])
+
+    def test_multipleBirths(self):
+        treeList = {"TEST_FAMILY1" : {"CHIL" : ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]}}
+        individualBirthdays = {"1" : datetime.date(1, 1, 1), "2" : datetime.date(1, 1, 1), "3" : datetime.date(1, 1, 1), "4" : datetime.date(1, 1, 1), "5" : datetime.date(1, 1, 1), "6" : datetime.date(1, 1, 1), "7" : datetime.date(2, 2, 2), "8" : datetime.date(3, 3, 3), "9" : datetime.date(3, 3, 3), "10" : datetime.date(3, 3, 3), "11" : datetime.date(3, 3, 3), "12" : datetime.date(3, 3, 3), "13" : datetime.date(3, 3, 3)}
+        self.assertEqual(treeChecker.multipleBirths(treeList, individualBirthdays), ["Invalid siblings: ['1', '2', '3', '4', '5', '6']", "Invalid siblings: ['8', '9', '10', '11', '12', '13']"])
+
 if __name__ == '__main__':
     print('Running Unit Tests')
     unittest.main()
