@@ -430,6 +430,103 @@ class TestTreeChecker(unittest.TestCase):
         divorces = treeChecker.getDivorces(treeList)
         self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), ["I1"])
 
+    def test_childbirth_beforeparentmarriage01(self):
+        # Test Child born before parents marriage = True
+        treeList = {
+            "F1": {
+                "MARR": datetime.date(1990, 12, 15),
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": "I3",
+                "DIV": "NA"
+            }
+        }
+        individualList = {
+            "I1": {"DEAT": "NA"},
+            "I2": {"DEAT": "NA"},
+            "I3": {"BIRT": datetime.date(1985, 12, 20)}
+        }
+        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
+        self.assertEqual(treeChecker.birthBeforeParentsMarriage(treeList, individualBirthdays), ["I3"])
+
+    def test_childbirth_beforeparentmarriage02(self):
+        # Test Child born before parents marriage = False
+        treeList = {
+            "F1": {
+                "MARR": datetime.date(1990, 12, 15),
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": "I3",
+                "DIV": "NA"
+            }
+        }
+        individualList = {
+            "I1": {"DEAT": "NA"},
+            "I2": {"DEAT": "NA"},
+            "I3": {"BIRT": datetime.date(2000, 12, 20)}
+        }
+        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
+        self.assertEqual(treeChecker.birthBeforeParentsMarriage(treeList, individualBirthdays), [])
+
+
+    def test_childbirth_afterparentdeath01(self):
+        # Test Child born more than 9 months after Father death
+        treeList = {
+            "F1": {
+                "MARR": datetime.date(1990, 12, 15),
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": "I3",
+                "DIV": "NA"
+            }
+        }
+        individualList = {
+            "I1": {"DEAT": datetime.date(1980, 4, 13)},
+            "I2": {"DEAT": "NA"},
+            "I3": {"BIRT": datetime.date(1985, 12, 20)}
+        }
+        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
+        self.assertEqual(treeChecker.birthBeforeParentsDeath(treeList, individualList, individualBirthdays), ["I3"])
+
+    def test_childbirth_afterparentdeath02(self):
+        # Test Child born less than 9 months after Father death
+        treeList = {
+            "F1": {
+                "MARR": datetime.date(1990, 12, 15),
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": "I3",
+                "DIV": "NA"
+            }
+        }
+        individualList = {
+            "I1": {"DEAT": datetime.date(1985, 5, 13)},
+            "I2": {"DEAT": "NA"},
+            "I3": {"BIRT": datetime.date(1985, 7, 20)}
+        }
+        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
+        self.assertEqual(treeChecker.birthBeforeParentsDeath(treeList, individualList, individualBirthdays), [])
+
+    def test_childbirth_afterparentdeath03(self):
+        # Test Child born after Mother death
+        treeList = {
+            "F1": {
+                "MARR": datetime.date(1990, 12, 15),
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": "I3",
+                "DIV": "NA"
+            }
+        }
+        individualList = {
+            "I1": {"DEAT": "NA"},
+            "I2": {"DEAT": datetime.date(2000, 5, 13)},
+            "I3": {"BIRT": datetime.date(2002, 7, 20)}
+        }
+        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
+        self.assertEqual(treeChecker.birthBeforeParentsDeath(treeList, individualList, individualBirthdays), ["I3"])
+
+
     def test_childrenLimit01(self):
         # Test if childrenLimit returns the invalid family when a family has 15 or more children
         treeList = {
