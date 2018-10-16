@@ -225,10 +225,12 @@ def parentsNotTooOld(treeList, individualList, individualBirthdays):
         children = values["CHIL"]
         for child in children:
             if len(child) > 1:
-                if int((str(individualBirthdays[husb] - individualBirthdays[child])).split(" ")[0])/365 > 80 :
-                    invalidIndividuals.append(husb)
-                if int((str(individualBirthdays[wife] - individualBirthdays[child])).split(" ")[0])/365 > 60 :
-                    invalidIndividuals.append(wife) 
+                if (str(individualBirthdays[husb] - individualBirthdays[child])).split(" ")[0][0] == '0' or float((str(individualBirthdays[husb] - individualBirthdays[child])).split(" ")[0])/365 > 80:
+                    if husb not in invalidIndividuals:
+                        invalidIndividuals.append(husb)
+                if (str(individualBirthdays[wife] - individualBirthdays[child])).split(" ")[0][0] == '0' or float((str(individualBirthdays[wife] - individualBirthdays[child])).split(" ")[0])/365 > 60:
+                    if wife not in invalidIndividuals:
+                        invalidIndividuals.append(wife) 
     return invalidIndividuals
 
 def childrenLimit(treeList):
