@@ -205,6 +205,47 @@ def bigamy(treeList, individualList, individualDeaths, divorces):
                         invalid.append(indi)
     return invalid
 
+def birthBeforeParentsMarriage(treeList, individualBirthdays):
+    """Returns a List of Invalid individuals... children born before marriage of parents"""
+    invalidIndividuals = []
+    for fam, values in treeList.items():
+        marriage = values["MARR"]
+        children = values["CHIL"]
+        if isinstance(values["CHIL"], list):
+            for child in children:
+                if marriage > individualBirthdays[child]:
+                    invalidIndividuals.append(child)
+        else:
+            if children is not "NA" and marriage > individualBirthdays[children]:
+                invalidIndividuals.append(children)
+    return invalidIndividuals
+
+def birthBeforeParentsDeath(treeList, individualList, individualBirthdays):
+    """Returns a List of Invalid individuals... children born after death of parents"""
+    invalidIndividuals = []
+    for fam, values in treeList.items():
+        husb = values["HUSB"]
+        fatherDeath = individualList[husb]["DEAT"]
+        # print(fatherDeath)
+        wife = values["WIFE"]
+        motherDeath = individualList[wife]["DEAT"]
+        # print(motherDeath)
+        children = values["CHIL"]
+        # print(children)
+        if isinstance(values["CHIL"], list):
+            for child in children:
+                if fatherDeath is not "NA" and individualBirthdays[child] > (fatherDeath + timedelta(days=266)):
+                    invalidIndividuals.append(child)
+                if motherDeath is not "NA" and individualBirthdays[child] > motherDeath:
+                    invalidIndividuals.append(child)
+        else:
+            if children is not "NA":
+                if fatherDeath is not "NA" and individualBirthdays[children] > (fatherDeath + timedelta(days=266)):
+                    invalidIndividuals.append(children)
+                if motherDeath is not "NA" and individualBirthdays[children] > motherDeath:
+                    invalidIndividuals.append(children)
+    return invalidIndividuals
+
 def marriageAfter14(individualBirthdays, marriages):
     """Returns a List of invalid marriages... husband or wife was marriage younger than 14"""
     invalidIndividuals = []
@@ -282,6 +323,8 @@ def main(treeList, individualList):
     #print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
     print("Invalid cases for marriage after 14 years old(US10): " + str(marriageAfter14(individualBirthdays, marriages)))
     print("Invalid cases for parents not too old(US12): " + str(parentsNotTooOld(treeList, individualList, individualBirthdays)))
+    print("Invalid cases for birth before marriage of parents(US08): " + str(birthBeforeParentsMarriage(treeList, individualBirthdays)))
+    print("Invalid cases for birth after death of parents(US09): " + str(birthBeforeParentsDeath(treeList, individualList, individualBirthdays)))
     print()
 
 
