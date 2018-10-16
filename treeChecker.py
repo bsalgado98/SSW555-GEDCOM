@@ -1,5 +1,6 @@
 import datetime
 from datetime import timedelta
+from Salgado_parseGEDCOM import individualList
 
 supportedTags = {"INDI": 0, "NAME": 1, "SEX": 1, "BIRT": 1, "DEAT": 1, "FAMC": 1, "FAMS": 1, "FAM": 0, "MARR": 1,
                  "HUSB": 1, "WIFE": 1, "CHIL": 1, "DIV": 1, "DATE": 2, "HEAD": 0, "TRLR": 0, "NOTE": 0}
@@ -296,6 +297,41 @@ def consistentLastNames(treeList, individualList):
                 invalidFamilies.append(fam)
                 break
     return invalidFamilies
+def siblingsSpacing(treeList, individualBirthdays):
+    invalid = []
+    siblings = []
+    twoDays = datetime.timedelta(days = 2)
+    eightMonths = datetime.timedelta(days = 243.334)
+    birthdayDifference = 0
+    for fam, values in treeList.items():
+        if isinstance(values["CHIL"], list):
+            siblings.append(values["CHIL"])
+    for i in range(len(siblings)):
+        for j in range(len(siblings[i])):
+            for k in range(j+1, len(siblings[i])):
+                birthdayDifference = abs(individualBirthdays[siblings[i][j]] - individualBirthdays[siblings[i][k]])
+                if(birthdayDifference > twoDays and birthdayDifference < eightMonths):
+                    invalid.append(siblings[i][j] + " and " + siblings[i][k])
+    return invalid
+
+def multipleBirths(treeList, individualBirthdays):
+    invalid = []
+    siblings = []
+    for fam, values in treeList.items():
+        if isinstance(values["CHIL"], list):
+            if(len(values["CHIL"]) > 5):
+                siblings.append(values["CHIL"])
+    repeatingBirthdays = {individualBirthdays[siblings[0][0]] : [siblings[0][0]]}
+    for i in range(len(siblings)):
+        for j in range(1, len(siblings[i])):
+            if(individualBirthdays[siblings[i][j]] in repeatingBirthdays.keys()):
+                repeatingBirthdays.get(individualBirthdays[siblings[i][j]]).append(siblings[i][j])
+            else:
+                repeatingBirthdays[individualBirthdays[siblings[i][j]]] = [siblings[i][j]] 
+    for key, value in repeatingBirthdays.items():
+        if(len(value) > 5):
+            invalid.append("Invalid siblings: " + str(value))
+    return invalid
 
 def main(treeList, individualList):
     convertDate(treeList, individualList)
@@ -305,6 +341,7 @@ def main(treeList, individualList):
     divorces = getDivorces(treeList)    
     birthBeforeCurrentDate(individualBirthdays)
     deathBeforeCurrentDate(individualDeaths)
+<<<<<<< HEAD
     childrenLimit(treeList)
 
     print("Invalid cases for marriage before current date(US01): " + str(marriageBeforeCurrentDate(marriages)))
@@ -322,6 +359,21 @@ def main(treeList, individualList):
     print("Invalid cases for parents not too old(US12): " + str(parentsNotTooOld(treeList, individualList, individualBirthdays)))
     print("Invalid cases for birth before marriage of parents(US08): " + str(birthBeforeParentsMarriage(treeList, individualBirthdays)))
     print("Invalid cases for birth after death of parents(US09): " + str(birthBeforeParentsDeath(treeList, individualList, individualBirthdays)))
+=======
+    print("Invalid cases for marriage before current date: " + str(marriageBeforeCurrentDate(marriages)))
+    print("Invalid cases for divorce before current date: " + str(divorcesBeforeCurrentDate(divorces)))
+    print("Invalid cases for birth before death: " + str(birthBeforeDeath(individualBirthdays, individualDeaths)))
+    print("invalid cases for birth before marriage: " + str(birthBeforeMarriage(individualBirthdays, marriages)))
+    print("Invalid cases for divorce before death: " + str(divorceBeforeDeath(treeList, individualList)))
+    print("Invalid cases for age limit: "+ str(ageLimit(individualBirthdays)))
+    print("Invalid cases for marriage before divorce: " + str(marriageBeforeDivorce(treeList)))
+    print("Invalid cases for marriage before death: " + str(marriageBeforeDeath(treeList, individualList)))
+    print("Invalid cases for birth before current date: " + str(birthBeforeCurrentDate(individualBirthdays)))
+    print("Invalid cases for death before current date: " + str(deathBeforeCurrentDate(individualDeaths)))
+    print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
+    print("Invalid cases for siblings spacing (US13): " + str(siblingsSpacing(treeList, individualBirthdays)))
+    print("Invalid cases for multiple births (US14): " + str(multipleBirths(treeList, individualBirthdays)))
+>>>>>>> Bruno-User-Stories
     print()
 
 
