@@ -489,6 +489,66 @@ class TestTreeChecker(unittest.TestCase):
         self.assertEqual(treeChecker.consistentLastNames(treeList, individualList), [])
 
 
+    def test_parentsNotTooOld(self):
+        #Test if marriageAfter14 returns an empty list when checking correct family ages
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": "I3"
+            }
+        }
+        individualList = {
+            "I1": {
+                "NAME": "Jane /Doe/",
+                "SEX": "F"
+            },
+            "I2": {
+                "NAME": "John /Doe/",
+                "SEX": "M"
+            },
+            "I3": {
+                "NAME": "Tom /Doe/",
+                "SEX": "M",
+            }
+        }
+        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
+        self.assertEqual(treeChecker.parentsNotTooOld(treeList, individualList, individualBirthdays), []) 
+
+    def test_marriageAfter14(self):
+        individualList = {
+           "I1": {
+                "NAME": "Jane /Doe/",
+                "SEX": "F",
+                "BIRT": datetime.datetime.strptime('1Jan1960', '%d%b%Y').date(),
+            },
+            "I2": {
+                "NAME": "John /Doe/",
+                "SEX": "M",
+                "BIRT": datetime.datetime.strptime('1Jan1962', '%d%b%Y').date(),
+            },
+            "I3": {
+                "NAME": "Tom /Doe/",
+                "SEX": "M",
+                "BIRT": datetime.datetime.strptime('1Jan1997', '%d%b%Y').date(),
+            }
+        }
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": "I3",
+                "MARR": datetime.datetime.strptime('1Jan1980', '%d%b%Y').date(),
+            }
+        }
+        marriages = treeChecker.getMarriages(treeList)
+        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
+        self.assertEqual(treeChecker.marriageAfter14(individualBirthdays, marriages), []) 
+
+
+
+
+
 if __name__ == '__main__':
     print('Running Unit Tests')
     unittest.main()
