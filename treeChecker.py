@@ -1,5 +1,6 @@
 import datetime
 from datetime import timedelta
+from Salgado_parseGEDCOM import individualList
 
 supportedTags = {"INDI": 0, "NAME": 1, "SEX": 1, "BIRT": 1, "DEAT": 1, "FAMC": 1, "FAMS": 1, "FAM": 0, "MARR": 1,
                  "HUSB": 1, "WIFE": 1, "CHIL": 1, "DIV": 1, "DATE": 2, "HEAD": 0, "TRLR": 0, "NOTE": 0}
@@ -188,8 +189,19 @@ def bigamy(treeList, individualList):
                         invalid.append(indi)
     return invalid
 
-def siblingsSpacing():
-    pass
+def siblingsSpacing(treeList, individualBirthdays):
+    invalid = []
+    siblings = []
+    for fam, values in treeList.items():
+        if isinstance(values["CHIL"], list):
+            siblings.append(values["CHIL"])
+    for i in range(len(siblings)):
+        for j in range(len(siblings[i])):
+            for k in range(j+1, len(siblings[i][j]) - j):
+                #if(individualBirthdays[i] - individualBirthdays[j]):
+                print(individualBirthdays[siblings[i][j]])
+                print(individualBirthdays[siblings[i][k]])
+            
 
 def main(treeList, individualList):
     convertDate(treeList, individualList)
@@ -211,6 +223,7 @@ def main(treeList, individualList):
     print("Invalid cases for birth before current date: " + str(birthBeforeCurrentDate(individualBirthdays)))
     print("Invalid cases for death before current date: " + str(deathBeforeCurrentDate(individualDeaths)))
     print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
+    print(siblingsSpacing(treeList, individualBirthdays))
     print()
 
 
