@@ -14,7 +14,10 @@ def addTag(isIndi, id, tag, value):
         if db[id][tag] == "NA" or db[id][tag] == "":
             db[id][tag] = value
         else:
-            db[id][tag] = list(db[id][tag]) + [value]
+            if not isinstance(db[id][tag], list):
+                db[id][tag] = [db[id][tag], value]
+            else:
+                db[id][tag] += [value]
 
 
 def parse(gedcomFile):

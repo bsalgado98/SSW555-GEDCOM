@@ -231,6 +231,32 @@ def parentsNotTooOld(treeList, individualList, individualBirthdays):
                     invalidIndividuals.append(wife) 
     return invalidIndividuals
 
+def childrenLimit(treeList):
+    invalidFamilies = []
+    for fam, values in treeList.items():
+        if isinstance(values["CHIL"], list) and len(values["CHIL"]) >= 15:
+            invalidFamilies.append(fam)
+    return invalidFamilies
+
+def consistentLastNames(treeList, individualList):
+    invalidFamilies = []
+    for fam, values in treeList.items():
+        males = [values["HUSB"]]
+        if isinstance(values["CHIL"], list):
+            for child in values["CHIL"]:
+                if individualList[child]["SEX"] is "M":
+                    males += [child]
+        else:
+            if individualList[values["CHIL"]] is not "NA" and individualList[values["CHIL"]]["SEX"] is "M":
+                males += [values["CHIL"]]
+        lastname = individualList[values["HUSB"]]["NAME"].split(" ")[1]
+        for indi in males:
+            indiLast = individualList[indi]["NAME"].split(" ")[1]
+            if lastname != indiLast:
+                invalidFamilies.append(fam)
+                break
+    return invalidFamilies
+
 def main(treeList, individualList):
     convertDate(treeList, individualList)
     individualBirthdays = getIndividualBirthdays(individualList)
@@ -239,6 +265,7 @@ def main(treeList, individualList):
     divorces = getDivorces(treeList)    
     birthBeforeCurrentDate(individualBirthdays)
     deathBeforeCurrentDate(individualDeaths)
+    childrenLimit(treeList)
 
     print("Invalid cases for marriage before current date: " + str(marriageBeforeCurrentDate(marriages)))
     print("Invalid cases for divorce before current date: " + str(divorcesBeforeCurrentDate(divorces)))

@@ -430,6 +430,64 @@ class TestTreeChecker(unittest.TestCase):
         divorces = treeChecker.getDivorces(treeList)
         self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), ["I1"])
 
+    def test_childrenLimit01(self):
+        # Test if childrenLimit returns the invalid family when a family has 15 or more children
+        treeList = {
+            "F1": {
+                "CHIL": ["I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9", "I10", "I11", "I12", "I13", "I14", "I15"]
+            }
+        }
+        self.assertEqual(treeChecker.childrenLimit(treeList), ["F1"])
+
+    def test_childrenLimit02(self):
+        # Test if childrenLimit returns an empty list when a family does not have 15 or more children
+        treeList = {
+            "F1": {
+                "CHIL": "I1"
+            }
+        }
+        self.assertEqual(treeChecker.childrenLimit(treeList), [])
+
+    def test_consistentLastNames01(self):
+        # Test if consistentLastNames returns the invalid family when a family has inconsistent last names for the males
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "CHIL": "I2"
+            }
+        }
+        individualList = {
+            "I1": {
+                "NAME": "John /Doe/",
+                "SEX": "M"
+            },
+            "I2": {
+                "NAME": "John /Smith/",
+                "SEX": "M"
+            }
+        }
+        self.assertEqual(treeChecker.consistentLastNames(treeList, individualList), ["F1"])
+
+    def test_consistentLastNames02(self):
+        # Test if consistentLastNames returns an empty list when a family has consistent last names for the males
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "CHIL": "I2"
+            }
+        }
+        individualList = {
+            "I1": {
+                "NAME": "John /Doe/",
+                "SEX": "M"
+            },
+            "I2": {
+                "NAME": "John /Doe/",
+                "SEX": "M"
+            }
+        }
+        self.assertEqual(treeChecker.consistentLastNames(treeList, individualList), [])
+
 
 if __name__ == '__main__':
     print('Running Unit Tests')
