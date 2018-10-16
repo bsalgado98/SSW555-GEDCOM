@@ -114,9 +114,7 @@ def birthBeforeDeath(individualBirthdays, individualDeaths):
         if value < individualBirthdays.get(key):
             invalidIndividuals.append(key)
     return invalidIndividuals
-    
-def us06(treeList, individualList):
-    pass
+
 
 def marriageBeforeDivorce(treeList):
     """Returns a List of Invalid Marriages that are After Divorce Date"""
@@ -180,7 +178,7 @@ def ageLimit(individualBirthdays):
             invalidAge.append(key)
     return(invalidAge)
 
-def bigamy(treeList, individualList):
+def bigamy(treeList, individualList, individualDeaths, divorces):
     """Returns a List of Invalid Marriages if Married to Another Person Already"""
     invalid = []
     for indi, values in individualList.items():
@@ -188,46 +186,145 @@ def bigamy(treeList, individualList):
             marriages = []
             for fam in values["FAMS"]:
                 marriages += [(treeList[fam]["MARR"], fam)]
-            marriages = sorted(marriages, key=lambda x: x[0])
+            marriages = sorted(marriages, key=lambda x: x[0])  # Sorts these marriages from earliest to latest
             for i in range(len(marriages) - 1):
                 husb = treeList[marriages[i][1]]["HUSB"]
                 wife = treeList[marriages[i][1]]["WIFE"]
-                divorce = treeList[marriages[i][1]]["DIV"]
-                if divorce is "NA":
+                if marriages[i][1] not in divorces.keys():
                     if individualList[indi]["SEX"] == "M":
-                        if individualList[wife]["DEAT"] is "NA" or marriages[i + 1][0] < individualList[wife]["DEAT"]:
+                        if wife not in individualDeaths.keys() or marriages[i + 1][0] < individualDeaths[wife]:
                             # print("Warning: Individual " + indi + " has married twice before divorce or death")
                             invalid.append(indi)
                     else:
-                        if individualList[husb]["DEAT"] is "NA" or marriages[i + 1][0] < individualList[husb]["DEAT"]:
+                        if husb not in individualDeaths.keys() or marriages[i + 1][0] < individualDeaths[husb]:
                             # print("Warning: Individual " + indi + " has married twice before divorce or death")
                             invalid.append(indi)
                 else:
-                    if marriages[i + 1][0] < divorce:
+                    if marriages[i + 1][0] < divorces[marriages[i][1]]:
                         # print("Warning: Individual " + indi + " has married twice before divorce")
                         invalid.append(indi)
     return invalid
+
+def birthBeforeParentsMarriage(treeList, individualBirthdays):
+    """Returns a List of Invalid individuals... children born before marriage of parents"""
+    invalidIndividuals = []
+    for fam, values in treeList.items():
+        marriage = values["MARR"]
+        children = values["CHIL"]
+        if isinstance(values["CHIL"], list):
+            for child in children:
+                if marriage > individualBirthdays[child]:
+                    invalidIndividuals.append(child)
+        else:
+            if children is not "NA" and marriage > individualBirthdays[children]:
+                invalidIndividuals.append(children)
+    return invalidIndividuals
+
+def birthBeforeParentsDeath(treeList, individualList, individualBirthdays):
+    """Returns a List of Invalid individuals... children born after death of parents"""
+    invalidIndividuals = []
+    for fam, values in treeList.items():
+        husb = values["HUSB"]
+        fatherDeath = individualList[husb]["DEAT"]
+        # print(fatherDeath)
+        wife = values["WIFE"]
+        motherDeath = individualList[wife]["DEAT"]
+        # print(motherDeath)
+        children = values["CHIL"]
+        # print(children)
+        if isinstance(values["CHIL"], list):
+            for child in children:
+                if fatherDeath is not "NA" and individualBirthdays[child] > (fatherDeath + timedelta(days=266)):
+                    invalidIndividuals.append(child)
+                if motherDeath is not "NA" and individualBirthdays[child] > motherDeath:
+                    invalidIndividuals.append(child)
+        else:
+            if children is not "NA":
+                if fatherDeath is not "NA" and individualBirthdays[children] > (fatherDeath + timedelta(days=266)):
+                    invalidIndividuals.append(children)
+                if motherDeath is not "NA" and individualBirthdays[children] > motherDeath:
+                    invalidIndividuals.append(children)
+    return invalidIndividuals
+
+def marriageAfter14(individualBirthdays, marriages):
+    """Returns a List of invalid marriages... husband or wife was marriage younger than 14"""
+    invalidIndividuals = []
+    for key, value in marriages.items():
+        if int((str(value - individualBirthdays[key[0]])).split(" ")[0])/365 < 14:
+            if key[0] not in invalidIndividuals:
+                    invalidIndividuals.append(key[0])
+        if int((str(value - individualBirthdays[key[1]])).split(" ")[0])/365 < 14:
+                if key[1] not in invalidIndividuals:
+                    invalidIndividuals.append(key[1])    
+    return invalidIndividuals
+
+def parentsNotTooOld(treeList, individualList, individualBirthdays):
+    invalidIndividuals = []
+    for fam, values in treeList.items():
+        husb = values["HUSB"]
+        wife = values["WIFE"]
+        children = values["CHIL"]
+        for child in children:
+            if len(child) > 1:
+                if (str(individualBirthdays[husb] - individualBirthdays[child])).split(" ")[0][0] == '0' or float((str(individualBirthdays[husb] - individualBirthdays[child])).split(" ")[0])/365 > 80:
+                    if husb not in invalidIndividuals:
+                        invalidIndividuals.append(husb)
+                if (str(individualBirthdays[wife] - individualBirthdays[child])).split(" ")[0][0] == '0' or float((str(individualBirthdays[wife] - individualBirthdays[child])).split(" ")[0])/365 > 60:
+                    if wife not in invalidIndividuals:
+                        invalidIndividuals.append(wife) 
+    return invalidIndividuals
+
+def childrenLimit(treeList):
+    invalidFamilies = []
+    for fam, values in treeList.items():
+        if isinstance(values["CHIL"], list) and len(values["CHIL"]) >= 15:
+            invalidFamilies.append(fam)
+    return invalidFamilies
+
+def consistentLastNames(treeList, individualList):
+    invalidFamilies = []
+    for fam, values in treeList.items():
+        males = [values["HUSB"]]
+        if isinstance(values["CHIL"], list):
+            for child in values["CHIL"]:
+                if individualList[child]["SEX"] is "M":
+                    males += [child]
+        else:
+            if individualList[values["CHIL"]] is not "NA" and individualList[values["CHIL"]]["SEX"] is "M":
+                males += [values["CHIL"]]
+        lastname = individualList[values["HUSB"]]["NAME"].split(" ")[1]
+        for indi in males:
+            indiLast = individualList[indi]["NAME"].split(" ")[1]
+            if lastname != indiLast:
+                invalidFamilies.append(fam)
+                break
+    return invalidFamilies
 
 def main(treeList, individualList):
     convertDate(treeList, individualList)
     individualBirthdays = getIndividualBirthdays(individualList)
     individualDeaths = getIndividualDeaths(individualList)
     marriages = getMarriages(treeList)
-    divorces = getDivorces(treeList)
-    
+    divorces = getDivorces(treeList)    
     birthBeforeCurrentDate(individualBirthdays)
     deathBeforeCurrentDate(individualDeaths)
-    print("Invalid cases for marriage before current date: " + str(marriageBeforeCurrentDate(marriages)))
-    print("Invalid cases for divorce before current date: " + str(divorcesBeforeCurrentDate(divorces)))
-    print("Invalid cases for birth before death: " + str(birthBeforeDeath(individualBirthdays, individualDeaths)))
-    print("invalid cases for birth before marriage: " + str(birthBeforeMarriage(individualBirthdays, marriages)))
-    print("Invalid cases for divorce before death: " + str(divorceBeforeDeath(treeList, individualList)))
-    print("Invalid cases for age limit: "+ str(ageLimit(individualBirthdays)))
-    print("Invalid cases for marriage before divorce: " + str(marriageBeforeDivorce(treeList)))
-    print("Invalid cases for marriage before death: " + str(marriageBeforeDeath(treeList, individualList)))
-    print("Invalid cases for birth before current date: " + str(birthBeforeCurrentDate(individualBirthdays)))
-    print("Invalid cases for death before current date: " + str(deathBeforeCurrentDate(individualDeaths)))
-    print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
+    childrenLimit(treeList)
+
+    print("Invalid cases for marriage before current date(US01): " + str(marriageBeforeCurrentDate(marriages)))
+    print("Invalid cases for divorce before current date(US01): " + str(divorcesBeforeCurrentDate(divorces)))
+    print("Invalid cases for birth before death(US03): " + str(birthBeforeDeath(individualBirthdays, individualDeaths)))
+    print("invalid cases for birth before marriage(US02): " + str(birthBeforeMarriage(individualBirthdays, marriages)))
+    print("Invalid cases for divorce before death(US06): " + str(divorceBeforeDeath(treeList, individualList)))
+    print("Invalid cases for age limit(US07): "+ str(ageLimit(individualBirthdays)))
+    print("Invalid cases for marriage before divorce(US04): " + str(marriageBeforeDivorce(treeList)))
+    print("Invalid cases for marriage before death(US05): " + str(marriageBeforeDeath(treeList, individualList)))
+    print("Invalid cases for birth before current date(US01): " + str(birthBeforeCurrentDate(individualBirthdays)))
+    print("Invalid cases for death before current date(US01): " + str(deathBeforeCurrentDate(individualDeaths)))
+    #print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
+    print("Invalid cases for marriage after 14 years old(US10): " + str(marriageAfter14(individualBirthdays, marriages)))
+    print("Invalid cases for parents not too old(US12): " + str(parentsNotTooOld(treeList, individualList, individualBirthdays)))
+    print("Invalid cases for birth before marriage of parents(US08): " + str(birthBeforeParentsMarriage(treeList, individualBirthdays)))
+    print("Invalid cases for birth after death of parents(US09): " + str(birthBeforeParentsDeath(treeList, individualList, individualBirthdays)))
     print()
 
 
