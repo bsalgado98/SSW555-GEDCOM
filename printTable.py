@@ -1,8 +1,10 @@
 from prettytable import PrettyTable
 import datetime
+import sqlite3
 
 
-def printTree(treeList, individualList):
+def printTree():
+
     indiTable = PrettyTable(["ID", "Name", "Gender", "Birthday", "Age", "Alive", "Death", "Child", "Spouse"])
     for id, args in individualList.items():
         if args["BIRT"] is not "NA":
