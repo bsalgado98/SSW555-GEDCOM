@@ -187,7 +187,7 @@ class TestTreeChecker(unittest.TestCase):
 
     def test_divorceBeforeDeath01(self):
         # Test if returns True when no deaths or divorces found
-            treeList = {
+        treeList = {
             "F1": {
                 "HUSB": "I1",
                 "WIFE": "I2",
