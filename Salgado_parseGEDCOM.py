@@ -1,5 +1,5 @@
-import sqlite3
 import os
+import sqlite3
 
 _SUPPORTEDTAGS = {
     "0": ["INDI", "FAM", "HEAD", "TRLR", "NOTE"],

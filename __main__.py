@@ -1,8 +1,8 @@
 import sys
-import Salgado_parseGEDCOM
-import treeChecker
-import printTable
 
+import Salgado_parseGEDCOM
+import printTable
+import treeChecker
 
 with open("invalidFamilyTree.ged", "r") as file:
     gedcomFile = file.readlines()

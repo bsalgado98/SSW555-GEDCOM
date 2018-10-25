@@ -1,11 +1,12 @@
-import Salgado_parseGEDCOM
-import unittest
-import treeChecker
 import datetime
 import sqlite3
+import unittest
+from datetime import timedelta
 from os import mkdir
 from shutil import rmtree
-from datetime import timedelta
+
+import Salgado_parseGEDCOM
+import treeChecker
 
 
 def dictToGEDCOM(zeroName, dictionary):

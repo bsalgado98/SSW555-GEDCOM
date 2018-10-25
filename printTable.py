@@ -1,6 +1,8 @@
 import datetime
 import sqlite3
+
 from prettytable import PrettyTable
+
 from treeChecker import getValue
 
 
@@ -50,6 +52,3 @@ def printTree(dbFile="gedcom.db"):
     print(indiTable.get_string(sortby="ID"))
     print("Families")
     print(famTable.get_string(sortby="ID"))
-
-
-printTree()
