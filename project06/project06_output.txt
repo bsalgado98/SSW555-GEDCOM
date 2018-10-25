@@ -1,0 +1,62 @@
+Individuals
++-----+---------------------+--------+-------------+-----+-------+-------------+-------+--------------+
+|  ID |         Name        | Gender |   Birthday  | Age | Alive |    Death    | Child |    Spouse    |
++-----+---------------------+--------+-------------+-----+-------+-------------+-------+--------------+
+|  I1 |    Saul /Weaver/    |   M    | 21 APR 1967 |  -1 | False | 10 DEC 1966 |   NA  |      F1      |
+| I10 | Angeline /Johnston/ |   F    |  7 JUN 1997 |  21 |  True |      NA     |   F3  |      NA      |
+| I11 |    James /Smith/    |   M    |  2 OCT 1972 |  46 |  True |      NA     |   F1  |      F3      |
+| I12 |    James /Smith/    |   M    |  2 OCT 1972 |  46 |  True |      NA     |   F1  |      F3      |
+| I13 |    James /Smith/    |   M    |  2 OCT 1972 |  46 |  True |      NA     |   F1  |      F3      |
+| I14 |    James /Smith/    |   M    |  2 OCT 1972 |  46 |  True |      NA     |   F1  |      F3      |
+| I15 |    James /Smith/    |   M    |  2 OCT 1972 |  46 |  True |      NA     |   F1  |      F3      |
+| I16 |     John /Paul/     |   M    |  2 OCT 1972 |  46 |  True |      NA     |   F1  |      F3      |
+| I17 |   Madeline /Paul/   |   M    |  2 OCT 1972 |  46 |  True |      NA     |   F1  |      F3      |
+|  I2 |   Peter /Johnston/  |   M    | 15 JAN 1770 | 251 | False | 10 DEC 2020 |   NA  |      F1      |
+|  I3 |   Sarah /Johnston/  |   F    | 30 MAY 1943 |  75 |  True |      NA     |   NA  | ['F1', 'F4'] |
+|  I4 |    James /Smith/    |   M    |  2 OCT 1972 |  46 |  True |      NA     |   F1  |      F3      |
+|  I5 |  Richard /Coppola/  |   M    |  9 FEB 1939 |  79 |  True |      NA     |   NA  |      F2      |
+|  I6 |    Mary /Coppola/   |   F    | 15 JAN 2020 |  -2 |  True |      NA     |   NA  |      F2      |
+|  I7 |   Lisa /Johnston/   |   F    |  6 NOV 1971 |  46 |  True |      NA     |   F1  | ['F3', 'F5'] |
+|  I8 |     Louis /Ford/    |   M    | 11 JUL 1974 |  44 |  True |      NA     |   NA  |      F5      |
+|  I9 |   Noah /Johnston/   |   M    |  8 OCT 1972 |  46 |  True |      NA     |   F3  |      NA      |
++-----+---------------------+--------+-------------+-----+-------+-------------+-------+--------------+
+Families
++-----+-------------+-------------+------------+-------------------+---------+------------------+--------------------------------------------------------------------------------------------------+
+|  ID |   Married   |   Divorced  | Husband ID |    Husband Name   | Wife ID |    Wife Name     |                                             Children                                             |
++-----+-------------+-------------+------------+-------------------+---------+------------------+--------------------------------------------------------------------------------------------------+
+|  F1 |  3 SEP 1968 |      NA     |     I2     |  Peter /Johnston/ |    I3   | Sarah /Johnston/ |                                                I4                                                |
+| F12 |  6 AUG 1970 | 16 MAR 1967 |     I1     |   Saul /Weaver/   |   I12   |  James /Smith/   |                                                NA                                                |
+|  F2 |  3 SEP 1970 |      NA     |     I5     | Richard /Coppola/ |    I6   |  Mary /Coppola/  |                                                I7                                                |
+|  F3 | 20 SEP 1998 |      NA     |     I4     |   James /Smith/   |    I7   | Lisa /Johnston/  |                                          ['I9', 'I10']                                           |
+|  F4 |  3 JUL 1963 |      NA     |     I1     |   Saul /Weaver/   |    I3   | Sarah /Johnston/ |                                                NA                                                |
+|  F5 |  6 AUG 2020 | 16 MAR 2019 |     I8     |    Louis /Ford/   |    I7   | Lisa /Johnston/  |                                                NA                                                |
+|  F6 |  6 AUG 1970 |      NA     |    I16     |    John /Paul/    |   I17   | Madeline /Paul/  | ['I1', 'I2', 'I3', 'I4', 'I5', 'I6', 'I7', 'I8', 'I9', 'I10', 'I11', 'I12', 'I13', 'I14', 'I15'] |
++-----+-------------+-------------+------------+-------------------+---------+------------------+--------------------------------------------------------------------------------------------------+
+Invalid cases for marriage before current date(US01): [('I8', 'I7')]
+Invalid cases for divorce before current date(US01): [('I8', 'I7')]
+Invalid cases for birth before death(US03): ['I1']
+invalid cases for birth before marriage(US02): ['I6', 'I1', 'I12', 'I16', 'I17']
+Invalid cases for divorce before death(US06): ['F12']
+Invalid cases for age limit(US07): ['I2']
+Invalid cases for marriage before divorce(US04): ['F5', 'F12']
+Invalid cases for marriage before death(US05): ['F12']
+Invalid cases for birth before current date(US01): ['I6']
+Invalid cases for death before current date(US01): ['I2']
+Invalid cases for marriage after 14 years old(US10): ['I6', 'I1', 'I12', 'I16', 'I17']
+Invalid cases for parents not too old(US12): ['I16', 'I17']
+Invalid cases for birth before marriage of parents(US08): ['I9', 'I10', 'I1', 'I2', 'I3', 'I5']
+Invalid cases for birth after death of parents(US09): []
+Invalid cases for marriage before current date: [('I8', 'I7')]
+Invalid cases for divorce before current date: [('I8', 'I7')]
+Invalid cases for birth before death: ['I1']
+invalid cases for birth before marriage: ['I6', 'I1', 'I12', 'I16', 'I17']
+Invalid cases for divorce before death: ['F12']
+Invalid cases for age limit: ['I2']
+Invalid cases for marriage before divorce: ['F5', 'F12']
+Invalid cases for marriage before death: ['F12']
+Invalid cases for birth before current date: ['I6']
+Invalid cases for death before current date: ['I2']
+Invalid cases for bigamy: ['I7']
+Invalid cases for siblings spacing (US13): ['I4 and I9', 'I9 and I11', 'I9 and I12', 'I9 and I13', 'I9 and I14', 'I9 and I15']
+Invalid cases for multiple births (US14): ["Invalid siblings: ['I4', 'I11', 'I12', 'I13', 'I14', 'I15']"]
+

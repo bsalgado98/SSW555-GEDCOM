@@ -341,7 +341,6 @@ def main(treeList, individualList):
     divorces = getDivorces(treeList)    
     birthBeforeCurrentDate(individualBirthdays)
     deathBeforeCurrentDate(individualDeaths)
-<<<<<<< HEAD
     childrenLimit(treeList)
 
     print("Invalid cases for marriage before current date(US01): " + str(marriageBeforeCurrentDate(marriages)))
@@ -359,7 +358,6 @@ def main(treeList, individualList):
     print("Invalid cases for parents not too old(US12): " + str(parentsNotTooOld(treeList, individualList, individualBirthdays)))
     print("Invalid cases for birth before marriage of parents(US08): " + str(birthBeforeParentsMarriage(treeList, individualBirthdays)))
     print("Invalid cases for birth after death of parents(US09): " + str(birthBeforeParentsDeath(treeList, individualList, individualBirthdays)))
-=======
     print("Invalid cases for marriage before current date: " + str(marriageBeforeCurrentDate(marriages)))
     print("Invalid cases for divorce before current date: " + str(divorcesBeforeCurrentDate(divorces)))
     print("Invalid cases for birth before death: " + str(birthBeforeDeath(individualBirthdays, individualDeaths)))
@@ -370,10 +368,9 @@ def main(treeList, individualList):
     print("Invalid cases for marriage before death: " + str(marriageBeforeDeath(treeList, individualList)))
     print("Invalid cases for birth before current date: " + str(birthBeforeCurrentDate(individualBirthdays)))
     print("Invalid cases for death before current date: " + str(deathBeforeCurrentDate(individualDeaths)))
-    print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList)))
+    print("Invalid cases for bigamy: " + str(bigamy(treeList, individualList, individualDeaths, divorces)))
     print("Invalid cases for siblings spacing (US13): " + str(siblingsSpacing(treeList, individualBirthdays)))
     print("Invalid cases for multiple births (US14): " + str(multipleBirths(treeList, individualBirthdays)))
->>>>>>> Bruno-User-Stories
     print()
 
 
