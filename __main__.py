@@ -11,16 +11,7 @@ with open("invalidFamilyTree.ged", "r") as file:
 #     gedcomFile = file.readlines()
 
 
-def init(args):
-    treeList, individualList = Salgado_parseGEDCOM.parse(gedcomFile)
-    printTable.printTree(treeList, individualList)
-
-
-def runTreeChecker(treeList, individualList):
-    treeChecker.main(treeList, individualList)
-
-
 if __name__ == "__main__":
     Salgado_parseGEDCOM.parse(gedcomFile)
     # printTable.printTree(treeList, individualList)
-    # runTreeChecker(treeList, individualList)
+    treeChecker.main()
