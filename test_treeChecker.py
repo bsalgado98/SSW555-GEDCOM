@@ -1,13 +1,33 @@
+import Salgado_parseGEDCOM
 import unittest
 import treeChecker
 import datetime
+import sqlite3
+from os import mkdir
+from shutil import rmtree
 from datetime import timedelta
 
 
-class TestTreeChecker(unittest.TestCase):
+def dictToGEDCOM(zeroName, dictionary):
+    lines = []
+    for ident, tags in dictionary.items():
+        lines.append("0 " + ident + " " + zeroName)
+        for tag, value in tags.items():
+            lines.append("1 " + tag + " " + value)
+    return lines
 
-    def setUp(self):
-        pass
+
+def setupTestDB(dbFile, famDict=None, indiDict=None):
+    if famDict is None:
+        famDict = {}
+    if indiDict is None:
+        indiDict = {}
+    gedcom = dictToGEDCOM("FAM", famDict) + dictToGEDCOM("INDI", indiDict)
+    Salgado_parseGEDCOM.parse(gedcom, dbFile)
+    return sqlite3.connect("/temp/" + dbFile).cursor()
+
+
+class TestTreeChecker(unittest.TestCase):
 
     def test_birthBeforeMarriage(self):
         # HUSB BIRT < MARR is true?
@@ -167,7 +187,7 @@ class TestTreeChecker(unittest.TestCase):
 
     def test_divorceBeforeDeath01(self):
         # Test if returns True when no deaths or divorces found
-        treeList = {
+            treeList = {
             "F1": {
                 "HUSB": "I1",
                 "WIFE": "I2",
@@ -468,7 +488,6 @@ class TestTreeChecker(unittest.TestCase):
         individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
         self.assertEqual(treeChecker.birthBeforeParentsMarriage(treeList, individualBirthdays), [])
 
-
     def test_childbirth_afterparentdeath01(self):
         # Test Child born more than 9 months after Father death
         treeList = {
@@ -525,7 +544,6 @@ class TestTreeChecker(unittest.TestCase):
         }
         individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
         self.assertEqual(treeChecker.birthBeforeParentsDeath(treeList, individualList, individualBirthdays), ["I3"])
-
 
     def test_childrenLimit01(self):
         # Test if childrenLimit returns the invalid family when a family has 15 or more children
@@ -585,9 +603,8 @@ class TestTreeChecker(unittest.TestCase):
         }
         self.assertEqual(treeChecker.consistentLastNames(treeList, individualList), [])
 
-
     def test_parentsNotTooOld(self):
-        #Test if marriageAfter14 returns an empty list when checking correct family ages
+        # Test if marriageAfter14 returns an empty list when checking correct family ages
         treeList = {
             "F1": {
                 "HUSB": "I1",
@@ -610,11 +627,11 @@ class TestTreeChecker(unittest.TestCase):
             }
         }
         individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
-        self.assertEqual(treeChecker.parentsNotTooOld(treeList, individualList, individualBirthdays), []) 
+        self.assertEqual(treeChecker.parentsNotTooOld(treeList, individualList, individualBirthdays), [])
 
     def test_marriageAfter14(self):
         individualList = {
-           "I1": {
+            "I1": {
                 "NAME": "Jane /Doe/",
                 "SEX": "F",
                 "BIRT": datetime.datetime.strptime('1Jan1960', '%d%b%Y').date(),
@@ -640,22 +657,28 @@ class TestTreeChecker(unittest.TestCase):
         }
         marriages = treeChecker.getMarriages(treeList)
         individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
-        self.assertEqual(treeChecker.marriageAfter14(individualBirthdays, marriages), []) 
-
-
-
-
+        self.assertEqual(treeChecker.marriageAfter14(individualBirthdays, marriages), [])
 
     def test_siblingsSpacing(self):
-        treeList = {"TEST_FAMILY1" : {"CHIL" : ["A", "B"]}, "TEST_FAMILY2" : {"CHIL" : ["C", "D", "E"]}}
-        individualBirthdays = {"A" : datetime.date(1, 1, 1), "B" : datetime.date(1, 1, 2), "C" : datetime.date(1, 1, 1), "D" : datetime.date(1, 1, 6), "E" : datetime.date(1, 1, 10)}
+        treeList = {"TEST_FAMILY1": {"CHIL": ["A", "B"]}, "TEST_FAMILY2": {"CHIL": ["C", "D", "E"]}}
+        individualBirthdays = {"A": datetime.date(1, 1, 1), "B": datetime.date(1, 1, 2), "C": datetime.date(1, 1, 1),
+                               "D": datetime.date(1, 1, 6), "E": datetime.date(1, 1, 10)}
         self.assertEqual(treeChecker.siblingsSpacing(treeList, individualBirthdays), ['C and D', 'C and E', 'D and E'])
 
     def test_multipleBirths(self):
-        treeList = {"TEST_FAMILY1" : {"CHIL" : ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]}}
-        individualBirthdays = {"1" : datetime.date(1, 1, 1), "2" : datetime.date(1, 1, 1), "3" : datetime.date(1, 1, 1), "4" : datetime.date(1, 1, 1), "5" : datetime.date(1, 1, 1), "6" : datetime.date(1, 1, 1), "7" : datetime.date(2, 2, 2), "8" : datetime.date(3, 3, 3), "9" : datetime.date(3, 3, 3), "10" : datetime.date(3, 3, 3), "11" : datetime.date(3, 3, 3), "12" : datetime.date(3, 3, 3), "13" : datetime.date(3, 3, 3)}
-        self.assertEqual(treeChecker.multipleBirths(treeList, individualBirthdays), ["Invalid siblings: ['1', '2', '3', '4', '5', '6']", "Invalid siblings: ['8', '9', '10', '11', '12', '13']"])
+        treeList = {"TEST_FAMILY1": {"CHIL": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]}}
+        individualBirthdays = {"1": datetime.date(1, 1, 1), "2": datetime.date(1, 1, 1), "3": datetime.date(1, 1, 1),
+                               "4": datetime.date(1, 1, 1), "5": datetime.date(1, 1, 1), "6": datetime.date(1, 1, 1),
+                               "7": datetime.date(2, 2, 2), "8": datetime.date(3, 3, 3), "9": datetime.date(3, 3, 3),
+                               "10": datetime.date(3, 3, 3), "11": datetime.date(3, 3, 3), "12": datetime.date(3, 3, 3),
+                               "13": datetime.date(3, 3, 3)}
+        self.assertEqual(treeChecker.multipleBirths(treeList, individualBirthdays),
+                         ["Invalid siblings: ['1', '2', '3', '4', '5', '6']",
+                          "Invalid siblings: ['8', '9', '10', '11', '12', '13']"])
+
 
 if __name__ == '__main__':
+    mkdir("temp")
     print('Running Unit Tests')
+    rmtree("temp/")
     unittest.main()

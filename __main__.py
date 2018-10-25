@@ -13,5 +13,5 @@ with open("invalidFamilyTree.ged", "r") as file:
 
 if __name__ == "__main__":
     Salgado_parseGEDCOM.parse(gedcomFile)
-    # printTable.printTree(treeList, individualList)
+    printTable.printTree()
     treeChecker.main()

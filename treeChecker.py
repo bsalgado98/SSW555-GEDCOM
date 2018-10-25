@@ -6,7 +6,10 @@ from datetime import timedelta
 def getValue(cursor, table, id, tag, fetchall=False):
     if table in {"INDI", "FAM"}:
         if not fetchall:
-            return cursor.execute("SELECT VALUE FROM {} WHERE ID=? AND TAG=?".format(table), (id, tag)).fetchone()[0]
+            valueTuple = cursor.execute("SELECT VALUE FROM {} WHERE ID=? AND TAG=?".format(table), (id, tag)).fetchone()
+            if valueTuple is None:
+                return None
+            return valueTuple[0]
         else:
             return list(map(lambda x: x[0],
                             cursor.execute("SELECT VALUE FROM {} WHERE ID=? AND TAG=?".format(table), (id, tag))
