@@ -406,6 +406,36 @@ def uniqueFirstNames(cursor):
     return invalidIndis
 
 
+def siblingsShouldNotMarry(cursor, marriages):
+    invalidMarriage = []
+    for key, value in marriages.items():
+        for key1 in cursor.execute("SELECT DISTINCT ID FROM FAM", ).fetchall():
+            key1 = key1[0]
+            children = getValue(cursor, "FAM", key1, "CHIL", fetchall=True)
+            if len(children) > 1:
+                if key[0] in children and key[1] in children:
+                    invalidMarriage.append(key)
+    return invalidMarriage
+
+def correctGenderForRole(cursor):
+    invalidGender = []
+    for key in cursor.execute("SELECT DISTINCT ID FROM INDI", ).fetchall():
+        for key1 in cursor.execute("SELECT DISTINCT ID FROM FAM", ).fetchall():
+        #for key1, value1 in treeList.items():
+            key = key[0]
+            key1 = key1[0]
+            husb = getValue(cursor, "FAM", key1, "HUSB", fetchall=True)
+            wife = getValue(cursor, "FAM", key1, "WIFE", fetchall=True)
+            sex = getValue(cursor, "FAM", key, "SEX", fetchall=True)
+            #NOT FINISHED
+            if key == husb and sex != "M" :
+                invalidGender.append(key)
+            if key == wife and sex != "F" :
+                invalidGender.append(key)
+    return invalidGender
+
+
+
 def main(dbFile="gedcom.db"):
     database = sqlite3.connect(dbFile)
     cursor = database.cursor()
@@ -445,7 +475,11 @@ def main(dbFile="gedcom.db"):
           str(siblingsSpacing(cursor, individualBirthdays)))
     print("Invalid cases for multiple births (US14): " +
           str(multipleBirths(cursor, individualBirthdays)))
-    print("Invalid cases for marriages sharing the same couples (US25): " +
-          str(allUniqueSpousePairs()))
+    #print("Invalid casesmarry for marriages sharing the same couples (US25): " +
+          #str(allUniqueSpousePairs()))
     print("Invalid cases for children sharing the same name and birthdays (US26): " +
           str(uniqueFirstNames(cursor)))
+    print("Invalid cases for children should not marry(US18): " +
+          str(siblingsShouldNotMarry(cursor, marriages)))
+    print("Invalid cases for correct gender for role(US21): " +
+          str(correctGenderForRole(cursor)))
