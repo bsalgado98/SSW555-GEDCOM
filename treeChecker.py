@@ -61,7 +61,7 @@ def getMarriages(cursor):
 
 
 def getDivorces(cursor):
-    """Make a Divorces List toi Utilize"""
+    """Make a Divorces List to Utilize"""
     divorces = {}
     for fam, value in cursor.execute("SELECT ID, VALUE FROM FAM WHERE TAG=\"DIV\"").fetchall():
         husb = getValue(cursor, "FAM", fam, "HUSB")
@@ -69,6 +69,27 @@ def getDivorces(cursor):
         divorces[(husb, wife)] = convertDate(value)
     return divorces
 
+def getAllIDsFromFamilies(cursor):
+    """Make a list of all individual IDs found in a family (including HUSB ID, WIFE ID, and all CHIL IDs)"""
+    treeList = {}
+    for fam, value, tag in cursor.execute("SELECT ID, VALUE, TAG FROM FAM WHERE TAG=\"HUSB\" OR TAG=\"WIFE\" OR TAG=\"CHIL\"").fetchall():
+        husb = getValue(cursor, "FAM", fam, "HUSB")
+        wife = getValue(cursor, "FAM", fam, "WIFE")
+        chil = getValue(cursor, "FAM", fam, "CHIL", True)
+        treeList[fam] = [husb, wife, chil]
+    print(treeList)
+    return treeList
+
+def getAllIDsFromIndividuals(cursor):
+    indiList = {}
+    chilIDs = []
+    famIDs = []
+    for indi, value, tag in cursor.execute("SELECT ID, VALUE, TAG FROM INDI WHERE TAG=\"FAMS\" OR TAG=\"FAMC\" OR TAG=\"SEX\"").fetchall():
+#         chilIDs.append(getValue(cursor, "INDI", indi, "FAMC"))
+#         famIDs.append(getValue(cursor, "INDI", indi, "FAMS", True))
+        indiList[indi] = [getValue(cursor, "INDI", indi, "SEX"), getValue(cursor, "INDI", indi, "FAMC"), getValue(cursor, "INDI", indi, "FAMS", True)]
+    print(indiList)
+    return indiList
 
 def setCurrentDate():
     now = datetime.datetime.today().date()
@@ -365,7 +386,27 @@ def multipleBirths(cursor, individualBirthdays):
             invalid.append("Invalid siblings: " + str(value))
     return invalid
 
-
+def correspondingEntries(treeList, indiList):
+    invalidList = []
+    for famID in treeList:
+        currentHusband = treeList.get(famID)[0]
+        currentWife = treeList.get(famID)[1]
+        currentChildren = treeList.get(famID)[2]
+        if famID in indiList.get(currentHusband)[2]:
+            if indiList.get(treeList.get(famID)[0])[0] != 'M':
+                invalidList.append("Misgendered husband in family: " + famID)
+        else:
+            invalidList.append("Missing husband: " + currentHusband +" in family: " + famID)
+        if famID in indiList.get(currentWife)[2]:
+            if indiList.get(treeList.get(famID)[0])[0] != 'F':
+                invalidList.append("Misgendered wife in family: " + famID)
+        else:
+            invalidList.append("Missing wife: " + currentWife + " in family: " + famID)
+            for child in currentChildren:
+                if indiList.get(child)[1] is not None and famID not in indiList.get(child)[1]:
+                    invalidList.append("Missing child: " + child + " in family: " + famID)
+    return invalidList       
+            
 def main(dbFile="gedcom.db"):
     database = sqlite3.connect(dbFile)
     cursor = database.cursor()
@@ -374,6 +415,8 @@ def main(dbFile="gedcom.db"):
     individualDeaths = getIndividualDeaths(cursor)
     marriages = getMarriages(cursor)
     divorces = getDivorces(cursor)
+    treeList = getAllIDsFromFamilies(cursor)
+    indiList = getAllIDsFromIndividuals(cursor)
 
     print("Invalid cases for marriage before current date(US01): " +
           str(marriageBeforeCurrentDate(marriages)))
@@ -405,3 +448,4 @@ def main(dbFile="gedcom.db"):
           str(siblingsSpacing(cursor, individualBirthdays)))
     print("Invalid cases for multiple births (US14): " +
           str(multipleBirths(cursor, individualBirthdays)))
+    print("Invalid cases for corresponding entries (US26): " + str(correspondingEntries(treeList, indiList)))
