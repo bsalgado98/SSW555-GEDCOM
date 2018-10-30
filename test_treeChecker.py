@@ -549,7 +549,8 @@ class TestTreeChecker(unittest.TestCase):
                 "CHIL": ["I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9", "I10", "I11", "I12", "I13", "I14", "I15"]
             }
         }
-        self.assertEqual(treeChecker.childrenLimit(treeList), ["F1"])
+        cursor = setupTestDB("childrenLimit01.db", famDict=treeList)
+        self.assertEqual(treeChecker.childrenLimit(cursor), ["F1"])
 
     def test_childrenLimit02(self):
         # Test if childrenLimit returns an empty list when a family does not have 15 or more children
@@ -558,7 +559,8 @@ class TestTreeChecker(unittest.TestCase):
                 "CHIL": "I1"
             }
         }
-        self.assertEqual(treeChecker.childrenLimit(treeList), [])
+        cursor = setupTestDB("childrenLimit02.db", famDict=treeList)
+        self.assertEqual(treeChecker.childrenLimit(cursor), [])
 
     def test_consistentLastNames01(self):
         # Test if consistentLastNames returns the invalid family when a family has inconsistent last names for the males
@@ -625,8 +627,9 @@ class TestTreeChecker(unittest.TestCase):
                 "SEX": "M",
             }
         }
-        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
-        self.assertEqual(treeChecker.parentsNotTooOld(treeList, individualList, individualBirthdays), [])
+        cursor = setupTestDB("parentsNotTooOld.db", treeList, individualList)
+        individualBirthdays = treeChecker.getIndividualBirthdays(cursor)
+        self.assertEqual(treeChecker.parentsNotTooOld(cursor, individualBirthdays), [])
 
     def test_marriageAfter14(self):
         individualList = {
@@ -654,15 +657,17 @@ class TestTreeChecker(unittest.TestCase):
                 "MARR": datetime.datetime.strptime('1Jan1980', '%d%b%Y').date(),
             }
         }
-        marriages = treeChecker.getMarriages(treeList)
-        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
+        cursor = setupTestDB("marriageAfter14.db", treeList, individualList)
+        marriages = treeChecker.getMarriages(cursor)
+        individualBirthdays = treeChecker.getIndividualBirthdays(cursor)
         self.assertEqual(treeChecker.marriageAfter14(individualBirthdays, marriages), [])
 
     def test_siblingsSpacing(self):
         treeList = {"TEST_FAMILY1": {"CHIL": ["A", "B"]}, "TEST_FAMILY2": {"CHIL": ["C", "D", "E"]}}
         individualBirthdays = {"A": datetime.date(1, 1, 1), "B": datetime.date(1, 1, 2), "C": datetime.date(1, 1, 1),
                                "D": datetime.date(1, 1, 6), "E": datetime.date(1, 1, 10)}
-        self.assertEqual(treeChecker.siblingsSpacing(treeList, individualBirthdays), ['C and D', 'C and E', 'D and E'])
+        cursor = setupTestDB("siblingSpacing.db", famDict=treeList)
+        self.assertEqual(treeChecker.siblingsSpacing(cursor, individualBirthdays), ['C and D', 'C and E', 'D and E'])
 
     def test_multipleBirths(self):
         treeList = {"TEST_FAMILY1": {"CHIL": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]}}
@@ -671,7 +676,8 @@ class TestTreeChecker(unittest.TestCase):
                                "7": datetime.date(2, 2, 2), "8": datetime.date(3, 3, 3), "9": datetime.date(3, 3, 3),
                                "10": datetime.date(3, 3, 3), "11": datetime.date(3, 3, 3), "12": datetime.date(3, 3, 3),
                                "13": datetime.date(3, 3, 3)}
-        self.assertEqual(treeChecker.multipleBirths(treeList, individualBirthdays),
+        cursor = setupTestDB("multipleBirths", famDict=treeList)
+        self.assertEqual(treeChecker.multipleBirths(cursor, individualBirthdays),
                          ["Invalid siblings: ['1', '2', '3', '4', '5', '6']",
                           "Invalid siblings: ['8', '9', '10', '11', '12', '13']"])
 
@@ -834,8 +840,8 @@ class TestTreeChecker(unittest.TestCase):
                 "CHIL": "I3"
             }
         }
-        marriages = treeChecker.getMarriages(treeList)
         cursor = setupTestDB("siblingsShouldNotMarry.db", treeList, individualList)
+        marriages = treeChecker.getMarriages(cursor)
         self.assertEqual(treeChecker.siblingsShouldNotMarry(cursor, marriages), [('I3', 'I4')])
 
 
