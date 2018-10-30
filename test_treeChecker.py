@@ -616,15 +616,18 @@ class TestTreeChecker(unittest.TestCase):
         individualList = {
             "I1": {
                 "NAME": "Jane /Doe/",
-                "SEX": "F"
+                "SEX": "F",
+                "BIRT": datetime.date(1990, 12, 15)
             },
             "I2": {
                 "NAME": "John /Doe/",
-                "SEX": "M"
+                "SEX": "M",
+                "BIRT": datetime.date(1990, 12, 15)
             },
             "I3": {
                 "NAME": "Tom /Doe/",
                 "SEX": "M",
+                "BIRT": datetime.date(1990, 12, 15)
             }
         }
         cursor = setupTestDB("parentsNotTooOld.db", treeList, individualList)
