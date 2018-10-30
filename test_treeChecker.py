@@ -467,8 +467,9 @@ class TestTreeChecker(unittest.TestCase):
             "I2": {"DEAT": "NA"},
             "I3": {"BIRT": datetime.date(1985, 12, 20)}
         }
-        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
-        self.assertEqual(treeChecker.birthBeforeParentsMarriage(treeList, individualBirthdays), ["I3"])
+        cursor = setupTestDB("beforeparentmarriage01.db", treeList, individualList)
+        individualBirthdays = treeChecker.getIndividualBirthdays(cursor)
+        self.assertEqual(treeChecker.birthBeforeParentsMarriage(cursor, individualBirthdays), ["I3"])
 
     def test_childbirth_beforeparentmarriage02(self):
         # Test Child born before parents marriage = False
@@ -486,8 +487,9 @@ class TestTreeChecker(unittest.TestCase):
             "I2": {"DEAT": "NA"},
             "I3": {"BIRT": datetime.date(2000, 12, 20)}
         }
-        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
-        self.assertEqual(treeChecker.birthBeforeParentsMarriage(treeList, individualBirthdays), [])
+        cursor = setupTestDB("beforeparentmarriage02.db", treeList, individualList)
+        individualBirthdays = treeChecker.getIndividualBirthdays(cursor)
+        self.assertEqual(treeChecker.birthBeforeParentsMarriage(cursor, individualBirthdays), [])
 
     def test_childbirth_afterparentdeath01(self):
         # Test Child born more than 9 months after Father death
@@ -505,8 +507,10 @@ class TestTreeChecker(unittest.TestCase):
             "I2": {"DEAT": "NA"},
             "I3": {"BIRT": datetime.date(1985, 12, 20)}
         }
-        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
-        self.assertEqual(treeChecker.birthBeforeParentsDeath(treeList, individualList, individualBirthdays), ["I3"])
+        cursor = setupTestDB("afterparentdeath01.db", treeList, individualList)
+        individualBirthdays = treeChecker.getIndividualBirthdays(cursor)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        self.assertEqual(treeChecker.birthBeforeParentsDeath(cursor, individualBirthdays, individualDeaths), ["I3"])
 
     def test_childbirth_afterparentdeath02(self):
         # Test Child born less than 9 months after Father death
@@ -524,8 +528,10 @@ class TestTreeChecker(unittest.TestCase):
             "I2": {"DEAT": "NA"},
             "I3": {"BIRT": datetime.date(1985, 7, 20)}
         }
-        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
-        self.assertEqual(treeChecker.birthBeforeParentsDeath(treeList, individualList, individualBirthdays), [])
+        cursor = setupTestDB("afterparentdeath02.db", treeList, individualList)
+        individualBirthdays = treeChecker.getIndividualBirthdays(cursor)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        self.assertEqual(treeChecker.birthBeforeParentsDeath(cursor, individualBirthdays, individualDeaths), [])
 
     def test_childbirth_afterparentdeath03(self):
         # Test Child born after Mother death
@@ -543,8 +549,10 @@ class TestTreeChecker(unittest.TestCase):
             "I2": {"DEAT": datetime.date(2000, 5, 13)},
             "I3": {"BIRT": datetime.date(2002, 7, 20)}
         }
-        individualBirthdays = treeChecker.getIndividualBirthdays(individualList)
-        self.assertEqual(treeChecker.birthBeforeParentsDeath(treeList, individualList, individualBirthdays), ["I3"])
+        cursor = setupTestDB("afterparentdeath03.db", treeList, individualList)
+        individualBirthdays = treeChecker.getIndividualBirthdays(cursor)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        self.assertEqual(treeChecker.birthBeforeParentsDeath(cursor, individualBirthdays, individualDeaths), ["I3"])
 
     def test_childrenLimit01(self):
         # Test if childrenLimit returns the invalid family when a family has 15 or more children
@@ -678,6 +686,66 @@ class TestTreeChecker(unittest.TestCase):
         self.assertEqual(treeChecker.multipleBirths(treeList, individualBirthdays),
                          ["Invalid siblings: ['1', '2', '3', '4', '5', '6']",
                           "Invalid siblings: ['8', '9', '10', '11', '12', '13']"])
+
+    def test_uniqueIDs(self):
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "WIFE": "I2"
+            },
+            "F2": {
+                "HUSB": "I3",
+                "WIFE": "I4"
+            }
+        }
+        individualList = {
+            "I1": {
+                "NAME": "John /Doe/",
+            },
+            "I2": {
+                "NAME": "Jessica /Doe/",
+            },
+            "I3": {
+                "NAME": "John /Dang/"
+            },
+            "I4": {
+                "NAME": "Jessica /Dang/"
+            }
+        }
+        cursor = setupTestDB("uniqueIDs.db", treeList, individualList)
+        self.assertEqual(treeChecker.uniqueIDs(cursor), ([], []))
+
+    def test_uniqueNameAndBirthDate01(self):
+        individualList = {
+            "I1": {
+                "NAME": "John /Doe/",
+                "BIRT": datetime.date(1, 1, 1)
+            },
+            "I2": {
+                "NAME": "John /Doe/",
+                "BIRT": datetime.date(1, 1, 1)
+            }
+        }
+        cursor = setupTestDB("uniqueNameAndBirthDate01.db", individualList)
+        self.assertEqual(treeChecker.uniqueIDs(cursor), ([], []))
+
+    def test_uniqueNameAndBirthDate02(self):
+        individualList = {
+            "I1": {
+                "NAME": "John /Damn/",
+                "BIRT": datetime.date(1, 1, 1)
+            },
+            "I2": {
+                "NAME": "John /Doe/",
+                "BIRT": datetime.date(1, 1, 1)
+            },
+            "I3": {
+                "NAME": "John /Doe/",
+                "BIRT": datetime.date(1, 2, 1)
+            }
+        }
+        cursor = setupTestDB("uniqueNameAndBirthDate02.db", individualList)
+        self.assertEqual(treeChecker.uniqueIDs(cursor), ([], []))
 
     def test_allUniqueSpousePairs01(self):
         treeList = {

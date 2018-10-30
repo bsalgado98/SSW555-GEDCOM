@@ -385,7 +385,41 @@ def multipleBirths(cursor, individualBirthdays):
         if (len(value) > 5):
             invalid.append("Invalid siblings: " + str(value))
     return invalid
-    
+
+def uniqueIDs(cursor):
+    invalidIndividuals = []
+    invalidFamilies = []
+    indiIDs = []
+    famIDs = []
+    for indi in cursor.execute("SELECT DISTINCT ID FROM INDI").fetchall():
+        indi = indi[0]
+        if indi in indiIDs:
+            invalidIndividuals.append(indi)
+        else:
+            indiIDs.append(indi)
+    for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
+        fam = fam[0]
+        if fam in famIDs:
+            invalidFamilies.append(fam)
+        else:
+            famIDs.append(fam)
+    return invalidIndividuals, invalidFamilies
+
+def uniqueNameAndBirth(cursor):
+    invalildIndividuals = []
+    nameList = []
+    bDateList = []
+    for indi in cursor.execute("SELECT DISTINCT ID FROM INDI").fetchall():
+        indi = indi[0]
+        name = getValue(cursor, "INDI", indi, "NAME")
+        birthdate = getValue(cursor, "INDI", indi, "BIRT")
+        if name in nameList and birthdate in bDateList:
+            invalildIndividuals.append(indi)
+        else:
+            nameList.append(name)
+            bDateList.append(birthdate)
+    return invalildIndividuals
+
 def allUniqueSpousePairs(cursor):
     invalidPairs = []
     spouses = []
@@ -517,6 +551,10 @@ def main(dbFile="gedcom.db"):
           str(siblingsSpacing(cursor, individualBirthdays)))
     print("Invalid cases for multiple births (US14): " +
           str(multipleBirths(cursor, individualBirthdays)))
+    print("Invalid cases for Unique IDs (US22): " +
+          str(uniqueIDs(cursor)))
+    print("Invalid cases for Unique Name and Birth Date (US23): " +
+          str(uniqueNameAndBirth(cursor)))
     #print("Invalid casesmarry for marriages sharing the same couples (US25): " +
           #str(allUniqueSpousePairs()))
     print("Invalid cases for children sharing the same name and birthdays (US26): " +
