@@ -746,6 +746,67 @@ class TestTreeChecker(unittest.TestCase):
         self.assertEqual(treeChecker.uniqueFirstNames(cursor), [])
 
 
+    def test_siblingsShouldNotMarry(self):
+        individualList = { 
+            "I1": {
+                    "NAME": "Jane /Doe/",
+                    "SEX": "F"
+                },
+            "I2": {
+                "NAME": "John /Doe/",
+                "SEX": "M"
+            },
+            "I3": {
+                "NAME": "Tom /Doe/",
+                "SEX": "M"
+            },
+            "I4": {
+                "NAME": "Sally /Doe/",
+                "SEX": "F"
+            }
+        }
+
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": ["I3","I4"]
+            },
+            "F2": {
+                "HUSB": "I3",
+                "WIFE": "I4",
+                "CHIL": "I3"
+            }
+        }
+        marriages = treeChecker.getMarriages(treeList)
+        cursor = setupTestDB("siblingsShouldNotMarry.db", treeList, individualList)
+        self.assertEqual(treeChecker.siblingsShouldNotMarry(cursor, marriages), [('I3', 'I4')])
+
+
+
+    def test_correctGenderForRole(self):
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": ["I3","I4"]
+            }
+        }
+        individualList = { 
+            "I1": {
+                    "NAME": "John /Doe/",
+                    "SEX": "F"
+                },
+            "I2": {
+                "NAME": "Mary /Doe/",
+                "SEX": "F"
+            }
+        }
+        cursor = setupTestDB("correctGenderForRole.db", treeList, individualList)
+        self.assertEqual(treeChecker.correctGenderForRole(cursor), ["I1"])
+
+
+
 if __name__ == '__main__':
     print('Running Unit Tests')
     unittest.main()
