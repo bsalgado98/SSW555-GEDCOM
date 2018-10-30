@@ -285,7 +285,7 @@ def birthBeforeParentsDeath(cursor, individualBirthdays, individualDeaths):
         for child in children:
             if individualBirthdays[child] > (fatherDeath + timedelta(days=266)):
                 invalidIndividuals.append(child)
-            if individualBirthdays[child] > motherDeath:
+            elif individualBirthdays[child] > motherDeath:
                 invalidIndividuals.append(child)
     return invalidIndividuals
 

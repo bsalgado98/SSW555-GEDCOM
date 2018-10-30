@@ -497,6 +497,7 @@ class TestTreeChecker(unittest.TestCase):
         }
         individualList = {
             "I1": {"DEAT": datetime.date(1980, 4, 13)},
+            "I2": {},
             "I3": {"BIRT": datetime.date(1985, 12, 20)}
         }
         cursor = setupTestDB("afterparentdeath01.db", treeList, individualList)
@@ -516,7 +517,7 @@ class TestTreeChecker(unittest.TestCase):
         }
         individualList = {
             "I1": {"DEAT": datetime.date(1985, 5, 13)},
-            "I3": {"BIRT": datetime.date(1985, 7, 20)}
+            "I3": {"BIRT": datetime.date(1985, 4, 20)}
         }
         cursor = setupTestDB("afterparentdeath02.db", treeList, individualList)
         individualBirthdays = treeChecker.getIndividualBirthdays(cursor)
@@ -535,12 +536,12 @@ class TestTreeChecker(unittest.TestCase):
         }
         individualList = {
             "I2": {"DEAT": datetime.date(2000, 5, 13)},
-            "I3": {"BIRT": datetime.date(2002, 7, 20)}
+            "I3": {"BIRT": datetime.date(2000, 4, 20)}
         }
         cursor = setupTestDB("afterparentdeath03.db", treeList, individualList)
         individualBirthdays = treeChecker.getIndividualBirthdays(cursor)
         individualDeaths = treeChecker.getIndividualDeaths(cursor)
-        self.assertEqual(treeChecker.birthBeforeParentsDeath(cursor, individualBirthdays, individualDeaths), ["I3"])
+        self.assertEqual(treeChecker.birthBeforeParentsDeath(cursor, individualBirthdays, individualDeaths), [])
 
     def test_childrenLimit01(self):
         # Test if childrenLimit returns the invalid family when a family has 15 or more children
