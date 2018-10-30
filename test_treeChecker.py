@@ -38,6 +38,13 @@ def setupTestDB(dbFile, famDict=None, indiDict=None):
 
 class TestTreeChecker(unittest.TestCase):
 
+    def setUp(self):
+        if not path.exists("temp"):
+            mkdir("temp")
+
+    def tearDown(self):
+        rmtree("temp")
+
     def test_birthBeforeMarriage(self):
         # HUSB BIRT < MARR is true?
         # WIFE BIRT < MARR is true?
@@ -876,4 +883,3 @@ class TestTreeChecker(unittest.TestCase):
 if __name__ == '__main__':
     print('Running Unit Tests')
     unittest.main()
-    rmtree("temp/")
