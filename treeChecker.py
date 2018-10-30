@@ -341,7 +341,7 @@ def consistentLastNames(cursor):
         husbLast = getValue(cursor, "INDI", husb, "NAME").split(" ")[1]
         for indi in children:
             if getValue(cursor, "INDI", indi, "SEX") is "M":
-                if getValue(cursor, "INDI", indi, "NAME").split(" ")[1] is not husbLast:
+                if getValue(cursor, "INDI", indi, "NAME").split(" ")[1] != husbLast:
                     invalidFamilies.append(fam)
     return invalidFamilies
 
