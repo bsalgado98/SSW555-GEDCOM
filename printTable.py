@@ -1,9 +1,11 @@
 import datetime
 import sqlite3
+import operator
 
 from prettytable import PrettyTable
 
 from treeChecker import getValue
+from webbrowser import Opera
 
 
 def printTree(dbFile="gedcom.db"):
@@ -46,9 +48,20 @@ def printTree(dbFile="gedcom.db"):
                           getValue(c, "INDI", husb, "NAME"),
                           wife,
                           getValue(c, "INDI", wife, "NAME"),
-                          getValue(c, "FAM", fam, "CHIL", fetchall=True)])
+                          getOrderedChildren(getValue(c, "FAM", fam, "CHIL", fetchall=True), c)])
 
     print("Individuals")
     print(indiTable.get_string(sortby="ID"))
     print("Families")
     print(famTable.get_string(sortby="ID"))
+    
+def getOrderedChildren(childArr, cursor):
+    birthdays = []
+    for child in childArr:
+        for birthday in cursor.execute("SELECT VALUE FROM INDI WHERE TAG=\"BIRT\" AND ID=\"" + child + "\"").fetchall():
+            birthdays.append((child, datetime.datetime.strptime(birthday[0], "%d %b %Y")))
+    birthdays_sorted = sorted(birthdays, key=lambda x: x[1])
+    children_sorted = []
+    for entry in birthdays_sorted:
+        children_sorted.append(entry[0])
+    return children_sorted
