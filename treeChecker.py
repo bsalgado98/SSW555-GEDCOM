@@ -439,19 +439,18 @@ def siblingsShouldNotMarry(cursor, marriages):
 
 def correctGenderForRole(cursor):
     invalidGender = []
-    for key in cursor.execute("SELECT DISTINCT ID FROM INDI", ).fetchall():
-        for key1 in cursor.execute("SELECT DISTINCT ID FROM FAM", ).fetchall():
-        #for key1, value1 in treeList.items():
-            key = key[0]
-            key1 = key1[0]
-            husb = getValue(cursor, "FAM", key1, "HUSB", fetchall=True)
-            wife = getValue(cursor, "FAM", key1, "WIFE", fetchall=True)
-            sex = getValue(cursor, "FAM", key, "SEX", fetchall=True)
-            #NOT FINISHED
-            if key == husb and sex != "M" :
-                invalidGender.append(key)
-            if key == wife and sex != "F" :
-                invalidGender.append(key)
+    for fam in cursor.execute("SELECT DISTINCT ID FROM FAM", ).fetchall():
+    #for key1, value1 in treeList.items():
+        #ind = ind[0]
+        fam = fam[0]
+        husb = getValue(cursor, "FAM", fam, "HUSB", fetchall=True)
+        wife = getValue(cursor, "FAM", fam, "WIFE", fetchall=True)
+        hsex = getValue(cursor, "INDI", husb[0], "SEX", fetchall=True)
+        wsex = getValue(cursor, "INDI", wife[0], "SEX", fetchall=True)
+        if hsex[0] != "M" and husb[0] not in invalidGender:
+            invalidGender.append(husb[0])
+        if wsex[0] != "F" and wife[0] not in invalidGender:
+            invalidGender.append(wife[0])
     return invalidGender
 
 
