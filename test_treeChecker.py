@@ -200,14 +200,12 @@ class TestTreeChecker(unittest.TestCase):
             "F1": {
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "DIV": "NA"
             }
         }
-        individualList = {
-            "I1": {"DEAT": "NA"},
-            "I2": {"DEAT": "NA"}
-        }
-        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), [])
+        cursor = setupTestDB("divorceBeforeDeath01.db", famDict=treeList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        divorces = treeChecker.getDivorces(cursor)
+        self.assertEqual(treeChecker.divorceBeforeDeath(cursor, individualDeaths, divorces), [])
 
     def test_divorceBeforeDeath02(self):
         # Test if returns True when no deaths but a valid divorce is found
@@ -218,11 +216,10 @@ class TestTreeChecker(unittest.TestCase):
                 "DIV": datetime.date(1, 1, 1)
             }
         }
-        individualList = {
-            "I1": {"DEAT": "NA"},
-            "I2": {"DEAT": "NA"}
-        }
-        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), [])
+        cursor = setupTestDB("divorceBeforeDeath02.db", famDict=treeList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        divorces = treeChecker.getDivorces(cursor)
+        self.assertEqual(treeChecker.divorceBeforeDeath(cursor, individualDeaths, divorces), [])
 
     def test_divorceBeforeDeath03(self):
         # Test if returns True when valid deaths and divorces are found
@@ -233,11 +230,10 @@ class TestTreeChecker(unittest.TestCase):
                 "DIV": datetime.date(1, 1, 1)
             }
         }
-        individualList = {
-            "I1": {"DEAT": datetime.date(9999, 1, 1)},
-            "I2": {"DEAT": datetime.date(9999, 1, 1)}
-        }
-        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), [])
+        cursor = setupTestDB("divorceBeforeDeath03.db", famDict=treeList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        divorces = treeChecker.getDivorces(cursor)
+        self.assertEqual(treeChecker.divorceBeforeDeath(cursor, individualDeaths, divorces), [])
 
     def test_divorceBeforeDeath04(self):
         # Test if returns False when an invalid divorce is found due to the husband's death
@@ -249,10 +245,14 @@ class TestTreeChecker(unittest.TestCase):
             }
         }
         individualList = {
-            "I1": {"DEAT": datetime.date(1, 1, 1)},
-            "I2": {"DEAT": "NA"}
+            "I1": {
+                "DEAT": datetime.date(1, 1, 1)
+            }
         }
-        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), ["F1"])
+        cursor = setupTestDB("divorceBeforeDeath04.db", treeList, individualList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        divorces = treeChecker.getDivorces(cursor)
+        self.assertEqual(treeChecker.divorceBeforeDeath(cursor, individualDeaths, divorces), ["F1"])
 
     def test_divorceBeforeDeath05(self):
         # Test if returns False when an invalid divorce is found due to the wife's death
@@ -264,10 +264,14 @@ class TestTreeChecker(unittest.TestCase):
             }
         }
         individualList = {
-            "I1": {"DEAT": "NA"},
-            "I2": {"DEAT": datetime.date(1, 1, 1)}
+            "I2": {
+                "DEAT": datetime.date(1, 1, 1)
+            }
         }
-        self.assertEqual(treeChecker.divorceBeforeDeath(treeList, individualList), ["F1"])
+        cursor = setupTestDB("divorceBeforeDeath05.db", treeList, individualList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        divorces = treeChecker.getDivorces(cursor)
+        self.assertEqual(treeChecker.divorceBeforeDeath(cursor, individualDeaths, divorces), ["F1"])
 
     def testAgeLimit(self):
         # Age < 150 years True?
@@ -300,16 +304,16 @@ class TestTreeChecker(unittest.TestCase):
                 "MARR": datetime.date(1, 1, 1),
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "DIV": "NA"
             }
         }
         individualList = {
             "I1": {"FAMS": "F1"},
             "I2": {"FAMS": "F1"}
         }
-        individualDeaths = treeChecker.getIndividualDeaths(individualList)
-        divorces = treeChecker.getDivorces(treeList)
-        self.assertEqual(treeChecker.bigamy(treeList, individualList, divorces), [])
+        cursor = setupTestDB("bigamy01.db", treeList, individualList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        divorces = treeChecker.getDivorces(cursor)
+        self.assertEqual(treeChecker.bigamy(cursor, individualDeaths, divorces), [])
 
     def test_bigamy02(self):
         # Test if returns False when bigamy with no divorces is found
@@ -318,35 +322,31 @@ class TestTreeChecker(unittest.TestCase):
                 "MARR": datetime.date(1, 1, 1),
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "DIV": "NA"
             },
             "F2": {
                 "MARR": datetime.date(1, 1, 2),
                 "HUSB": "I1",
                 "WIFE": "I3",
-                "DIV": "NA"
             }
         }
         individualList = {
             "I1": {
                 "SEX": "M",
-                "DEAT": "NA",
                 "FAMS": ["F1", "F2"],
             },
             "I2": {
                 "SEX": "F",
-                "DEAT": "NA",
                 "FAMS": "F1",
             },
             "I3": {
                 "SEX": "F",
-                "DEAT": "NA",
                 "FAMS": "F2",
             }
         }
-        individualDeaths = treeChecker.getIndividualDeaths(individualList)
-        divorces = treeChecker.getDivorces(treeList)
-        self.assertEqual(treeChecker.bigamy(treeList, individualList, divorces), ["I1"])
+        cursor = setupTestDB("bigamy02.db", treeList, individualList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        divorces = treeChecker.getDivorces(cursor)
+        self.assertEqual(treeChecker.bigamy(cursor, individualDeaths, divorces), ["I1"])
 
     def test_bigamy03(self):
         # Test if returns False when bigamy with divorces is found
@@ -361,29 +361,26 @@ class TestTreeChecker(unittest.TestCase):
                 "MARR": datetime.date(1, 1, 2),
                 "HUSB": "I1",
                 "WIFE": "I3",
-                "DIV": "NA"
             }
         }
         individualList = {
             "I1": {
                 "SEX": "M",
-                "DEAT": "NA",
                 "FAMS": ["F1", "F2"],
             },
             "I2": {
                 "SEX": "F",
-                "DEAT": "NA",
                 "FAMS": "F1",
             },
             "I3": {
                 "SEX": "F",
-                "DEAT": "NA",
                 "FAMS": "F2",
             }
         }
-        individualDeaths = treeChecker.getIndividualDeaths(individualList)
-        divorces = treeChecker.getDivorces(treeList)
-        self.assertEqual(treeChecker.bigamy(treeList, individualList, divorces), ["I1"])
+        cursor = setupTestDB("bigamy03.db", treeList, individualList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        divorces = treeChecker.getDivorces(cursor)
+        self.assertEqual(treeChecker.bigamy(cursor, individualDeaths, divorces), ["I1"])
 
     def test_bigamy04(self):
         # Test if returns False when bigamy with deaths is found
@@ -392,19 +389,16 @@ class TestTreeChecker(unittest.TestCase):
                 "MARR": datetime.date(1, 1, 1),
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "DIV": "NA"
             },
             "F2": {
                 "MARR": datetime.date(1, 1, 2),
                 "HUSB": "I1",
                 "WIFE": "I3",
-                "DIV": "NA"
             }
         }
         individualList = {
             "I1": {
                 "SEX": "M",
-                "DEAT": "NA",
                 "FAMS": ["F1", "F2"],
             },
             "I2": {
@@ -414,13 +408,13 @@ class TestTreeChecker(unittest.TestCase):
             },
             "I3": {
                 "SEX": "F",
-                "DEAT": "NA",
                 "FAMS": "F2",
             }
         }
-        individualDeaths = treeChecker.getIndividualDeaths(individualList)
-        divorces = treeChecker.getDivorces(treeList)
-        self.assertEqual(treeChecker.bigamy(treeList, individualList, divorces), ["I1"])
+        cursor = setupTestDB("bigamy04.db", treeList, individualList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        divorces = treeChecker.getDivorces(cursor)
+        self.assertEqual(treeChecker.bigamy(cursor, individualDeaths, divorces), ["I1"])
 
     def test_bigamy05(self):
         # Test if returns False when bigamy with both divorce and death is found
@@ -435,13 +429,11 @@ class TestTreeChecker(unittest.TestCase):
                 "MARR": datetime.date(1, 1, 2),
                 "HUSB": "I1",
                 "WIFE": "I3",
-                "DIV": "NA"
             }
         }
         individualList = {
             "I1": {
                 "SEX": "M",
-                "DEAT": "NA",
                 "FAMS": ["F1", "F2"],
             },
             "I2": {
@@ -451,13 +443,13 @@ class TestTreeChecker(unittest.TestCase):
             },
             "I3": {
                 "SEX": "F",
-                "DEAT": "NA",
                 "FAMS": "F2",
             }
         }
-        individualDeaths = treeChecker.getIndividualDeaths(individualList)
-        divorces = treeChecker.getDivorces(treeList)
-        self.assertEqual(treeChecker.bigamy(treeList, individualList, divorces), ["I1"])
+        cursor = setupTestDB("bigamy05.db", treeList, individualList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        divorces = treeChecker.getDivorces(cursor)
+        self.assertEqual(treeChecker.bigamy(cursor, individualDeaths, divorces), ["I1"])
 
     def test_childbirth_beforeparentmarriage01(self):
         # Test Child born before parents marriage = True
@@ -590,7 +582,8 @@ class TestTreeChecker(unittest.TestCase):
                 "SEX": "M"
             }
         }
-        self.assertEqual(treeChecker.consistentLastNames(treeList, individualList), ["F1"])
+        cursor = setupTestDB("consistentLastNames01.db", treeList, individualList)
+        self.assertEqual(treeChecker.consistentLastNames(cursor), ["F1"])
 
     def test_consistentLastNames02(self):
         # Test if consistentLastNames returns an empty list when a family has consistent last names for the males
@@ -610,7 +603,8 @@ class TestTreeChecker(unittest.TestCase):
                 "SEX": "M"
             }
         }
-        self.assertEqual(treeChecker.consistentLastNames(treeList, individualList), [])
+        cursor = setupTestDB("consistentLastNames02.db", treeList, individualList)
+        self.assertEqual(treeChecker.consistentLastNames(cursor), [])
 
     def test_parentsNotTooOld(self):
         # Test if marriageAfter14 returns an empty list when checking correct family ages
@@ -732,7 +726,6 @@ class TestTreeChecker(unittest.TestCase):
         cursor = setupTestDB("uniqueFirstNames01.db", treeList, individualList)
         self.assertEqual(treeChecker.uniqueFirstNames(cursor), ["John /Doe/"])
 
-
     def test_uniqueFirstNames02(self):
         treeList = {
             "F1": {
@@ -755,5 +748,5 @@ class TestTreeChecker(unittest.TestCase):
 
 if __name__ == '__main__':
     print('Running Unit Tests')
-    rmtree("temp/")
     unittest.main()
+    rmtree("temp/")
