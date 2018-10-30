@@ -366,6 +366,39 @@ def multipleBirths(cursor, individualBirthdays):
     return invalid
 
 
+def allUniqueSpousePairs(marriages):
+    allPairs = marriages.keys()
+    uniquePairs = set(allPairs)
+    if len(allPairs) == len(uniquePairs):
+        return []
+    for pair in uniquePairs:
+        allPairs.remove(pair)
+    return allPairs
+
+
+def uniqueFirstNames(cursor):
+    invalidIndis = []
+    for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
+        fam = fam[0]
+        chilNames = cursor.execute("SELECT VALUE FROM INDI WHERE TAG=? AND ID IN " +
+                                   "(SELECT VALUE FROM FAM WHERE TAG=? AND ID=?)",
+                                   ("NAME", "CHIL", fam)).fetchall()
+        if chilNames is (None,):
+            return []
+        chilNames = list(map(lambda x: x[0], chilNames))
+        uniqueChilNames = set(chilNames)
+        if len(chilNames) == len(uniqueChilNames):
+            return []
+        for name in uniqueChilNames:
+            chilNames.remove(name)
+        for name in chilNames:
+            allBirthdays = cursor.execute("SELECT VALUE FROM INDI WHERE TAG=? AND ID IN " +
+                                          "(SELECT ID FROM INDI WHERE TAG=? AND VALUE=?)",
+                                          ("BIRT", "NAME", name)).fetchall()
+            if len(allBirthdays) != len(set(allBirthdays)):
+                invalidIndis.append(name)
+
+
 def main(dbFile="gedcom.db"):
     database = sqlite3.connect(dbFile)
     cursor = database.cursor()
