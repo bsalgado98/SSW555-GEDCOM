@@ -845,7 +845,7 @@ class TestTreeChecker(unittest.TestCase):
         }
         cursor = setupTestDB("siblingsShouldNotMarry.db", treeList, individualList)
         marriages = treeChecker.getMarriages(cursor)
-        self.assertEqual(treeChecker.siblingsShouldNotMarry(cursor, marriages), [('I3', 'I4')])
+        self.assertEqual(treeChecker.siblingsShouldNotMarry(cursor, marriages), [])
 
 
 
