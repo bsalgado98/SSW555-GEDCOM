@@ -2,7 +2,7 @@ import datetime
 import sqlite3
 import unittest
 from datetime import timedelta
-from os import mkdir
+from os import mkdir, path
 from shutil import rmtree
 
 import Salgado_parseGEDCOM
@@ -14,18 +14,26 @@ def dictToGEDCOM(zeroName, dictionary):
     for ident, tags in dictionary.items():
         lines.append("0 " + ident + " " + zeroName)
         for tag, value in tags.items():
-            lines.append("1 " + tag + " " + value)
+            if isinstance(value, datetime.date):
+                lines.append("1 " + tag + " " + value.strftime("%d %b %Y"))
+            elif isinstance(value, list):
+                for item in value:
+                    lines.append("1 " + tag + " " + item)
+            else:
+                lines.append("1 " + tag + " " + value)
     return lines
 
 
 def setupTestDB(dbFile, famDict=None, indiDict=None):
+    if not path.exists("temp"):
+        mkdir("temp")
     if famDict is None:
         famDict = {}
     if indiDict is None:
         indiDict = {}
     gedcom = dictToGEDCOM("FAM", famDict) + dictToGEDCOM("INDI", indiDict)
-    Salgado_parseGEDCOM.parse(gedcom, dbFile)
-    return sqlite3.connect("/temp/" + dbFile).cursor()
+    Salgado_parseGEDCOM.parse(gedcom, "file:temp/" + dbFile)
+    return sqlite3.connect("file:temp/" + dbFile, uri=True).cursor()
 
 
 class TestTreeChecker(unittest.TestCase):
@@ -301,7 +309,7 @@ class TestTreeChecker(unittest.TestCase):
         }
         individualDeaths = treeChecker.getIndividualDeaths(individualList)
         divorces = treeChecker.getDivorces(treeList)
-        self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), [])
+        self.assertEqual(treeChecker.bigamy(treeList, individualList, divorces), [])
 
     def test_bigamy02(self):
         # Test if returns False when bigamy with no divorces is found
@@ -338,7 +346,7 @@ class TestTreeChecker(unittest.TestCase):
         }
         individualDeaths = treeChecker.getIndividualDeaths(individualList)
         divorces = treeChecker.getDivorces(treeList)
-        self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), ["I1"])
+        self.assertEqual(treeChecker.bigamy(treeList, individualList, divorces), ["I1"])
 
     def test_bigamy03(self):
         # Test if returns False when bigamy with divorces is found
@@ -375,7 +383,7 @@ class TestTreeChecker(unittest.TestCase):
         }
         individualDeaths = treeChecker.getIndividualDeaths(individualList)
         divorces = treeChecker.getDivorces(treeList)
-        self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), ["I1"])
+        self.assertEqual(treeChecker.bigamy(treeList, individualList, divorces), ["I1"])
 
     def test_bigamy04(self):
         # Test if returns False when bigamy with deaths is found
@@ -412,7 +420,7 @@ class TestTreeChecker(unittest.TestCase):
         }
         individualDeaths = treeChecker.getIndividualDeaths(individualList)
         divorces = treeChecker.getDivorces(treeList)
-        self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), ["I1"])
+        self.assertEqual(treeChecker.bigamy(treeList, individualList, divorces), ["I1"])
 
     def test_bigamy05(self):
         # Test if returns False when bigamy with both divorce and death is found
@@ -449,7 +457,7 @@ class TestTreeChecker(unittest.TestCase):
         }
         individualDeaths = treeChecker.getIndividualDeaths(individualList)
         divorces = treeChecker.getDivorces(treeList)
-        self.assertEqual(treeChecker.bigamy(treeList, individualList, individualDeaths, divorces), ["I1"])
+        self.assertEqual(treeChecker.bigamy(treeList, individualList, divorces), ["I1"])
 
     def test_childbirth_beforeparentmarriage01(self):
         # Test Child born before parents marriage = True
@@ -677,9 +685,75 @@ class TestTreeChecker(unittest.TestCase):
                          ["Invalid siblings: ['1', '2', '3', '4', '5', '6']",
                           "Invalid siblings: ['8', '9', '10', '11', '12', '13']"])
 
+    def test_allUniqueSpousePairs01(self):
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "WIFE": "I2"
+            },
+            "F2": {
+                "HUSB": "I1",
+                "WIFE": "I2"
+            }
+        }
+        cursor = setupTestDB("allUniqueSpousePairs01.db", famDict=treeList)
+        self.assertEqual(treeChecker.allUniqueSpousePairs(cursor), [("I1", "I2")])
+
+    def test_allUniqueSpousePairs02(self):
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "WIFE": "I2"
+            },
+            "F2": {
+                "HUSB": "I2",
+                "WIFE": "I3"
+            }
+        }
+        cursor = setupTestDB("allUniqueSpousePairs02.db", famDict=treeList)
+        self.assertEqual(treeChecker.allUniqueSpousePairs(cursor), [])
+
+    def test_uniqueFirstNames01(self):
+        treeList = {
+            "F1": {
+                "CHIL": ["I1", "I2"]
+            }
+        }
+        individualList = {
+            "I1": {
+                "NAME": "John /Doe/",
+                "BIRT": datetime.date(1, 1, 1)
+            },
+            "I2": {
+                "NAME": "John /Doe/",
+                "BIRT": datetime.date(1, 1, 1)
+            }
+        }
+        cursor = setupTestDB("uniqueFirstNames01.db", treeList, individualList)
+        self.assertEqual(treeChecker.uniqueFirstNames(cursor), ["John /Doe/"])
+
+
+    def test_uniqueFirstNames02(self):
+        treeList = {
+            "F1": {
+                "CHIL": ["I1", "I2"]
+            }
+        }
+        individualList = {
+            "I1": {
+                "NAME": "John /Doe/",
+                "BIRT": datetime.date(1, 1, 1)
+            },
+            "I2": {
+                "NAME": "John /Doe/",
+                "BIRT": datetime.date(1, 1, 2)
+            }
+        }
+        cursor = setupTestDB("uniqueFirstNames02.db", treeList, individualList)
+        self.assertEqual(treeChecker.uniqueFirstNames(cursor), [])
+
 
 if __name__ == '__main__':
-    mkdir("temp")
     print('Running Unit Tests')
     rmtree("temp/")
     unittest.main()

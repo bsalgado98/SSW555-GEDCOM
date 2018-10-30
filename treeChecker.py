@@ -201,7 +201,7 @@ def ageLimit(individualBirthdays):
     return (invalidAge)
 
 
-def bigamy(cursor, individualDeaths, marriages, divorces):
+def bigamy(cursor, individualDeaths, divorces):
     """Returns a List of Invalid Marriages if Married to Another Person Already"""
     invalid = []
 
@@ -366,14 +366,19 @@ def multipleBirths(cursor, individualBirthdays):
     return invalid
 
 
-def allUniqueSpousePairs(marriages):
-    allPairs = marriages.keys()
-    uniquePairs = set(allPairs)
-    if len(allPairs) == len(uniquePairs):
-        return []
-    for pair in uniquePairs:
-        allPairs.remove(pair)
-    return allPairs
+def allUniqueSpousePairs(cursor):
+    invalidPairs = []
+    spouses = []
+    for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
+        fam = fam[0]
+        husb = getValue(cursor, "FAM", fam, "HUSB")
+        wife = getValue(cursor, "FAM", fam, "WIFE")
+        pair = (husb, wife)
+        if pair in spouses:
+            invalidPairs.append(pair)
+        else:
+            spouses.append(pair)
+    return invalidPairs
 
 
 def uniqueFirstNames(cursor):
@@ -384,19 +389,21 @@ def uniqueFirstNames(cursor):
                                    "(SELECT VALUE FROM FAM WHERE TAG=? AND ID=?)",
                                    ("NAME", "CHIL", fam)).fetchall()
         if chilNames is (None,):
-            return []
+            continue
         chilNames = list(map(lambda x: x[0], chilNames))
         uniqueChilNames = set(chilNames)
         if len(chilNames) == len(uniqueChilNames):
-            return []
+            continue
         for name in uniqueChilNames:
             chilNames.remove(name)
         for name in chilNames:
             allBirthdays = cursor.execute("SELECT VALUE FROM INDI WHERE TAG=? AND ID IN " +
                                           "(SELECT ID FROM INDI WHERE TAG=? AND VALUE=?)",
                                           ("BIRT", "NAME", name)).fetchall()
-            if len(allBirthdays) != len(set(allBirthdays)):
+            uniqueBirthdays = set(allBirthdays)
+            if len(allBirthdays) != len(uniqueBirthdays):
                 invalidIndis.append(name)
+    return invalidIndis
 
 
 def main(dbFile="gedcom.db"):
@@ -425,7 +432,7 @@ def main(dbFile="gedcom.db"):
     print("Invalid cases for marriage before death(US05): " +
           str(marriageBeforeDeath(cursor, individualDeaths)))
     print("Invalid cases for bigamy: " +
-          str(bigamy(cursor, individualDeaths, marriages, divorces)))
+          str(bigamy(cursor, individualDeaths, divorces)))
     print("Invalid cases for marriage after 14 years old(US10): " +
           str(marriageAfter14(individualBirthdays, marriages)))
     print("Invalid cases for parents not too old(US12): " +
@@ -438,3 +445,7 @@ def main(dbFile="gedcom.db"):
           str(siblingsSpacing(cursor, individualBirthdays)))
     print("Invalid cases for multiple births (US14): " +
           str(multipleBirths(cursor, individualBirthdays)))
+    print("Invalid cases for marriages sharing the same couples (US25): " +
+          str(allUniqueSpousePairs()))
+    print("Invalid cases for children sharing the same name and birthdays (US26): " +
+          str(uniqueFirstNames(cursor)))

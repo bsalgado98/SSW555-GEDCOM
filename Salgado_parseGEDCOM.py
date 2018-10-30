@@ -17,7 +17,7 @@ def _setupDB(dbFile):
     """
     if os.path.isfile(dbFile):
         os.remove(dbFile)
-    database = sqlite3.connect(dbFile)
+    database = sqlite3.connect(dbFile, uri=True)
     cursor = database.cursor()
     cursor.execute("CREATE TABLE INDI (ID TEXT, TAG TEXT, VALUE TEXT)")
     cursor.execute("CREATE TABLE FAM (ID TEXT, TAG TEXT, VALUE TEXT)")
