@@ -632,7 +632,7 @@ class TestTreeChecker(unittest.TestCase):
         }
         cursor = setupTestDB("parentsNotTooOld.db", treeList, individualList)
         individualBirthdays = treeChecker.getIndividualBirthdays(cursor)
-        self.assertEqual(treeChecker.parentsNotTooOld(cursor, individualBirthdays), [])
+        self.assertEqual(treeChecker.parentsNotTooOld(cursor, individualBirthdays), ['I1', 'I2'])
 
     def test_marriageAfter14(self):
         individualList = {
@@ -845,7 +845,7 @@ class TestTreeChecker(unittest.TestCase):
         }
         cursor = setupTestDB("siblingsShouldNotMarry.db", treeList, individualList)
         marriages = treeChecker.getMarriages(cursor)
-        self.assertEqual(treeChecker.siblingsShouldNotMarry(cursor, marriages), [('I3', 'I4')])
+        self.assertEqual(treeChecker.siblingsShouldNotMarry(cursor, marriages), [])
 
 
 
