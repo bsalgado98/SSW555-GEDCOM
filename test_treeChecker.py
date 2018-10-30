@@ -458,13 +458,10 @@ class TestTreeChecker(unittest.TestCase):
                 "MARR": datetime.date(1990, 12, 15),
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "CHIL": "I3",
-                "DIV": "NA"
+                "CHIL": "I3"
             }
         }
         individualList = {
-            "I1": {"DEAT": "NA"},
-            "I2": {"DEAT": "NA"},
             "I3": {"BIRT": datetime.date(1985, 12, 20)}
         }
         cursor = setupTestDB("beforeparentmarriage01.db", treeList, individualList)
@@ -478,13 +475,10 @@ class TestTreeChecker(unittest.TestCase):
                 "MARR": datetime.date(1990, 12, 15),
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "CHIL": "I3",
-                "DIV": "NA"
+                "CHIL": "I3"
             }
         }
         individualList = {
-            "I1": {"DEAT": "NA"},
-            "I2": {"DEAT": "NA"},
             "I3": {"BIRT": datetime.date(2000, 12, 20)}
         }
         cursor = setupTestDB("beforeparentmarriage02.db", treeList, individualList)
@@ -498,13 +492,11 @@ class TestTreeChecker(unittest.TestCase):
                 "MARR": datetime.date(1990, 12, 15),
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "CHIL": "I3",
-                "DIV": "NA"
+                "CHIL": "I3"
             }
         }
         individualList = {
             "I1": {"DEAT": datetime.date(1980, 4, 13)},
-            "I2": {"DEAT": "NA"},
             "I3": {"BIRT": datetime.date(1985, 12, 20)}
         }
         cursor = setupTestDB("afterparentdeath01.db", treeList, individualList)
@@ -519,13 +511,11 @@ class TestTreeChecker(unittest.TestCase):
                 "MARR": datetime.date(1990, 12, 15),
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "CHIL": "I3",
-                "DIV": "NA"
+                "CHIL": "I3"
             }
         }
         individualList = {
             "I1": {"DEAT": datetime.date(1985, 5, 13)},
-            "I2": {"DEAT": "NA"},
             "I3": {"BIRT": datetime.date(1985, 7, 20)}
         }
         cursor = setupTestDB("afterparentdeath02.db", treeList, individualList)
@@ -540,12 +530,10 @@ class TestTreeChecker(unittest.TestCase):
                 "MARR": datetime.date(1990, 12, 15),
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "CHIL": "I3",
-                "DIV": "NA"
+                "CHIL": "I3"
             }
         }
         individualList = {
-            "I1": {"DEAT": "NA"},
             "I2": {"DEAT": datetime.date(2000, 5, 13)},
             "I3": {"BIRT": datetime.date(2002, 7, 20)}
         }
