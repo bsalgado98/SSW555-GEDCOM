@@ -4,10 +4,12 @@ import unittest
 from datetime import timedelta
 from os import mkdir, path
 from shutil import rmtree
+import io
+import sys
 
 import Salgado_parseGEDCOM
 import treeChecker
-
+import printTable
 
 def dictToGEDCOM(zeroName, dictionary):
     lines = []
@@ -871,8 +873,37 @@ class TestTreeChecker(unittest.TestCase):
         cursor = setupTestDB("correctGenderForRole.db", treeList, individualList)
         self.assertEqual(treeChecker.correctGenderForRole(cursor), ["I1"])
 
-
-
+    def test_correspondingEntries(self):
+        treeList = {
+            "F1": ['I1', 'I2', ['I3', 'I4']],
+            "F2": ['I5', 'I6', ['I7', 'I8']]
+        }
+        indiList = {
+            "I1": ['M', None, ['F1']],
+            "I2": ['F', None, ['F1']],
+            "I3": ['M', 'F1', [None]],
+            "I4": ['F', 'F1', [None]],
+            "I5": ['F', None, ['F2']],
+            "I6": ['F', None, ['F1']],
+            "I7": ['M', 'F1', [None]],
+            "I8": ['F', 'F1', [None]]
+        }
+        self.assertEqual(treeChecker.correspondingEntries(treeList, indiList), [
+            'Misgendered wife in family: F1',
+            'Misgendered husband in family: F2',
+            'Missing wife: I6 in family: F2',
+            'Missing child: I7 in family: F2',
+            'Missing child: I8 in family: F2'
+        ])
+        
+    def test_orderSiblingsByAge(self):
+        self.maxDiff = None
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        printTable.printTree()
+        sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(), capturedOutput.getValue())
+        
 if __name__ == '__main__':
     print('Running Unit Tests')
     unittest.main()
