@@ -54,7 +54,8 @@ def printTree(dbFile="gedcom.db"):
     print(indiTable.get_string(sortby="ID"))
     print("Families")
     print(famTable.get_string(sortby="ID"))
-    
+
+
 def getOrderedChildren(childArr, cursor):
     birthdays = []
     for child in childArr:

@@ -11,6 +11,7 @@ import Salgado_parseGEDCOM
 import treeChecker
 import printTable
 
+
 def dictToGEDCOM(zeroName, dictionary):
     lines = []
     for ident, tags in dictionary.items():
@@ -820,13 +821,12 @@ class TestTreeChecker(unittest.TestCase):
         cursor = setupTestDB("uniqueFirstNames02.db", treeList, individualList)
         self.assertEqual(treeChecker.uniqueFirstNames(cursor), [])
 
-
     def test_siblingsShouldNotMarry(self):
-        individualList = { 
+        individualList = {
             "I1": {
-                    "NAME": "Jane /Doe/",
-                    "SEX": "F"
-                },
+                "NAME": "Jane /Doe/",
+                "SEX": "F"
+            },
             "I2": {
                 "NAME": "John /Doe/",
                 "SEX": "M"
@@ -845,7 +845,7 @@ class TestTreeChecker(unittest.TestCase):
             "F1": {
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "CHIL": ["I3","I4"]
+                "CHIL": ["I3", "I4"]
             },
             "F2": {
                 "HUSB": "I3",
@@ -857,21 +857,19 @@ class TestTreeChecker(unittest.TestCase):
         marriages = treeChecker.getMarriages(cursor)
         self.assertEqual(treeChecker.siblingsShouldNotMarry(cursor, marriages), [])
 
-
-
     def test_correctGenderForRole(self):
         treeList = {
             "F1": {
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "CHIL": ["I3","I4"]
+                "CHIL": ["I3", "I4"]
             }
         }
-        individualList = { 
+        individualList = {
             "I1": {
-                    "NAME": "John /Doe/",
-                    "SEX": "F"
-                },
+                "NAME": "John /Doe/",
+                "SEX": "F"
+            },
             "I2": {
                 "NAME": "Mary /Doe/",
                 "SEX": "F"
@@ -902,7 +900,7 @@ class TestTreeChecker(unittest.TestCase):
             'Missing child: I7 in family: F2',
             'Missing child: I8 in family: F2'
         ])
-        
+
     def test_orderSiblingsByAge(self):
         self.maxDiff = None
         capturedOutput = io.StringIO()
@@ -910,7 +908,8 @@ class TestTreeChecker(unittest.TestCase):
         printTable.printTree()
         sys.stdout = sys.__stdout__
         self.assertEqual(capturedOutput.getvalue(), capturedOutput.getValue())
-        
+
+
 if __name__ == '__main__':
     print('Running Unit Tests')
     unittest.main()
