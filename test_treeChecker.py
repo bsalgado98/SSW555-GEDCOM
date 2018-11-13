@@ -903,7 +903,53 @@ class TestTreeChecker(unittest.TestCase):
         printTable.printTree()
         sys.stdout = sys.__stdout__
         self.assertEqual(capturedOutput.getvalue(), capturedOutput.getValue())
+
+    def test_listDeceased(self):
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": ["I3","I4"]
+            }
+        }
+        individualList = { 
+            "I1": {
+                    "NAME": "John /Doe/",
+                    "SEX": "F"
+                },
+            "I2": {
+                "NAME": "Mary /Doe/",
+                "SEX": "F"
+            }
+        }
+        cursor = setupTestDB("listDeceased.db", treeList, individualList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        self.assertEqual(treeChecker.listDeceased(individualDeaths), [])
         
+
+    def test_listLivingMarried(self):
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": ["I3","I4"]
+            }
+        }
+        individualList = { 
+            "I1": {
+                    "NAME": "John /Doe/",
+                    "SEX": "F"
+                },
+            "I2": {
+                "NAME": "Mary /Doe/",
+                "SEX": "F"
+            }
+        }
+        cursor = setupTestDB("listLivingMarried.db", treeList, individualList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        self.assertEqual(treeChecker.listLivingMarried(cursor, individualDeaths), ["I1", "I2"])
+
+
 if __name__ == '__main__':
     print('Running Unit Tests')
     unittest.main()
