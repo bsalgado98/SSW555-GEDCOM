@@ -110,7 +110,7 @@ def deathBeforeCurrentDate(individualDeaths):
     """Returns a List of Invalid Deaths that are After Current Date"""
     invalidDeaths = []
     now = setCurrentDate()
-    for indi, date in individualDeaths.items():
+    for ndii, date in individualDeaths.items():
         if now < date:
             invalidDeaths.append(indi)
     return invalidDeaths
@@ -510,6 +510,33 @@ def correspondingEntries(treeList, indiList):
                     invalidList.append("Missing child: " + child + " in family: " + famID)
     return invalidList       
             
+
+
+def listDeceased(individualDeaths):
+    deceased = []
+    for indi in individualDeaths.items():
+        deceased.append(indi[0])
+
+    return deceased
+
+
+def listLivingMarried(cursor, individualDeaths):
+    livingMarried = []
+    for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
+        fam = fam[0]
+        husb = getValue(cursor, "FAM", fam, "HUSB", fetchall=True)
+        wife = getValue(cursor, "FAM", fam, "WIFE", fetchall=True)
+        if husb not in individualDeaths.items():
+            livingMarried.append(husb[0])
+        if wife not in individualDeaths.items():
+            livingMarried.append(wife[0])
+    return livingMarried
+
+
+
+
+
+
 def main(dbFile="gedcom.db"):
     database = sqlite3.connect(dbFile)
     cursor = database.cursor()
@@ -564,3 +591,7 @@ def main(dbFile="gedcom.db"):
     print("Invalid cases for correct gender for role(US21): " +
           str(correctGenderForRole(cursor)))
     print("Invalid cases for corresponding entries (US26): " + str(correspondingEntries(treeList, indiList)))
+    print("List Deceased(US30): " +
+          str(listDeceased(individualDeaths)))
+    print("List Living Married(US31): " +
+          str(listLivingMarried(cursor, individualDeaths)))
