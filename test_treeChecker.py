@@ -1088,7 +1088,7 @@ class TestTreeChecker(unittest.TestCase):
             }
         }
         cursor = setupTestDB("us20_checkFirstCousins01.db", treelist, indiList)
-        self.assertEqual(["F1"], treeChecker.us20_checkFirstCousins(cursor))
+        self.assertEqual(["F1"], treeChecker.us19_checkFirstCousins(cursor))
 
     def test_us20_auntsUnclesMarryNieceNephews01(self):
         treeList = {
@@ -1115,47 +1115,6 @@ class TestTreeChecker(unittest.TestCase):
         }
         cursor = setupTestDB("test_auntsUnclesMarryNieceNephews01.db", treeList, indiList)
         self.assertEqual(["F3"], treeChecker.us20_auntsUnclesMarryNieceNephews(cursor))
-
-
-
-    def test_noMarriagesToDescendants_US17(self):
-        treeList = {
-            "F1": {
-                "HUSB": "I1",
-                "WIFE": "I2",
-                "CHIL": ["I3, I4"]
-            },
-            "F2": {
-                "HUSB": "I5",
-                "WIFE": "I6",
-                "CHIL": ["I6"]
-            },
-            "F3": {
-                "HUSB": "I7",
-                "WIFE": "I8",
-                "CHIL": "I7"
-            }
-        }
-        individualList = {
-            "I1": {
-                "NAME": "j"
-            }
-        }
-        marriages = {
-            ('I1', 'I2'): 'a date',
-            ('I5', 'I6'): 'a date',
-            ('I7', 'I8'): 'a date'
-        }
-        cursor = setupTestDB("noMarriagesToDescendants.db", treeList, individualList)
-        self.assertEqual(treeChecker.noMarriagesToDescendants(cursor, marriages), ['F2', 'F3'])
-
-    def test_includePartialDates_US41(self):
-        self.maxDiff = None
-        capturedOutput = io.StringIO()
-        sys.stdout = capturedOutput
-        printTable.printTree()
-        sys.stdout = sys.__stdout__
-        self.assertEqual(capturedOutput.getvalue(), capturedOutput.getValue())
 
 
 if __name__ == '__main__':

@@ -583,7 +583,7 @@ def listUpcomingBirthdaysUS38(cursor, individualDeaths):
                 upcomingBirthdays.append(indi)
     return upcomingBirthdays
 
-def us20_checkFirstCousins(cursor):
+def us19_checkFirstCousins(cursor):
     invalidFamilies = []
     for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
         fam = fam[0]
@@ -714,3 +714,7 @@ def main(dbFile="gedcom.db"):
     print("List Living Single(US31): " + str(listLivingSingleUS31(cursor, individualDeaths)))
     print("List of Individuals with Upcoming Birthdays(US38): " + str(listUpcomingBirthdaysUS38(cursor, individualDeaths)))
     print("Invalid cases for no marriages to descendants (US17): " + str(noMarriagesToDescendantsUS17(cursor, marriages)))
+    print("First cousins who have married (US19): " +
+          str(us19_checkFirstCousins(cursor)))
+    print("Aunts or uncles who have married nieces or nephews (US20): " +
+          str(us20_auntsUnclesMarryNieceNephews(cursor)))
