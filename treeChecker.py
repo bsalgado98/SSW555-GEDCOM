@@ -83,7 +83,6 @@ def getAllIDsFromFamilies(cursor):
         wife = getValue(cursor, "FAM", fam, "WIFE")
         chil = getValue(cursor, "FAM", fam, "CHIL", True)
         treeList[fam] = [husb, wife, chil]
-    print(treeList)
     return treeList
 
 
@@ -97,7 +96,6 @@ def getAllIDsFromIndividuals(cursor):
         #         famIDs.append(getValue(cursor, "INDI", indi, "FAMS", True))
         indiList[indi] = [getValue(cursor, "INDI", indi, "SEX"), getValue(cursor, "INDI", indi, "FAMC"),
                           getValue(cursor, "INDI", indi, "FAMS", True)]
-    print(indiList)
     return indiList
 
 
@@ -600,7 +598,8 @@ def us19_checkFirstCousins(cursor):
         for spouse, spouseSide in sides:
             if fam:
                 aunts = getValue(cursor, "FAM", spouseSide, "CHIL", fetchall=True)
-                aunts.remove(spouse)
+                if spouse in aunts:
+                    aunts.remove(spouse)
                 for aunt in aunts:
                     cousinFams = getValue(cursor, "INDI", aunt, "FAMS", fetchall=True)
                     if cousinFams != (None,):
@@ -631,7 +630,8 @@ def us20_auntsUnclesMarryNieceNephews(cursor):
         childOf = getValue(cursor, "INDI", indi, "FAMC")
         if childOf:
             siblings = getValue(cursor, "FAM", childOf, "CHIL", fetchall=True)
-            siblings.remove(indi)
+            if indi in siblings:
+                siblings.remove(indi)
             if siblings:
                 for sib in siblings:
                     sibSpouseOf = getValue(cursor, "INDI", sib, "FAMS", fetchall=True)
