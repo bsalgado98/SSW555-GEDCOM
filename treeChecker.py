@@ -106,7 +106,7 @@ def setCurrentDate():
     return (now)
 
 
-def birthBeforeCurrentDate(individualBirthdays):
+def birthBeforeCurrentDateUS01(individualBirthdays):
     """Returns a List of Invalid Birthdays that are After Current Date"""
     invalidBirthdays = []
     now = setCurrentDate()
@@ -116,7 +116,7 @@ def birthBeforeCurrentDate(individualBirthdays):
     return invalidBirthdays
 
 
-def deathBeforeCurrentDate(individualDeaths):
+def deathBeforeCurrentDateUS01(individualDeaths):
     """Returns a List of Invalid Deaths that are After Current Date"""
     invalidDeaths = []
     now = setCurrentDate()
@@ -126,7 +126,7 @@ def deathBeforeCurrentDate(individualDeaths):
     return invalidDeaths
 
 
-def marriageBeforeCurrentDate(marriages):
+def marriageBeforeCurrentDateUS01(marriages):
     """Returns a List of Invalid Marriages that are After Current Date"""
     invalidMarriages = []
     now = setCurrentDate()
@@ -136,7 +136,7 @@ def marriageBeforeCurrentDate(marriages):
     return (invalidMarriages)
 
 
-def divorcesBeforeCurrentDate(divorces):
+def divorcesBeforeCurrentDateUS01(divorces):
     """Returns a List of Invalid Divorces that are After Current Date"""
     invalidDivorces = []
     now = setCurrentDate()
@@ -146,7 +146,7 @@ def divorcesBeforeCurrentDate(divorces):
     return (invalidDivorces)
 
 
-def birthBeforeMarriage(individualBirthdays, marriages):
+def birthBeforeMarriageUS02(individualBirthdays, marriages):
     """Returns a List of Invalid Births that are After Marriage Date"""
     invalidIndividuals = []
     for key, value in marriages.items():
@@ -157,7 +157,7 @@ def birthBeforeMarriage(individualBirthdays, marriages):
     return invalidIndividuals
 
 
-def birthBeforeDeath(individualBirthdays, individualDeaths):
+def birthBeforeDeathUS03(individualBirthdays, individualDeaths):
     """Returns a List of Invalid Births that are After Death Date"""
     invalidIndividuals = []
     for key, value in individualDeaths.items():
@@ -166,7 +166,7 @@ def birthBeforeDeath(individualBirthdays, individualDeaths):
     return invalidIndividuals
 
 
-def marriageBeforeDivorce(cursor, marriages, divorces):
+def marriageBeforeDivorceUS04(cursor, marriages, divorces):
     """Returns a List of Invalid Marriages that are After Divorce Date"""
     invalidMarriages = []
     for pair, date in divorces.items():
@@ -178,7 +178,7 @@ def marriageBeforeDivorce(cursor, marriages, divorces):
     return invalidMarriages
 
 
-def marriageBeforeDeath(cursor, individualDeaths):
+def marriageBeforeDeathUS05(cursor, individualDeaths):
     """Returns a List of Invalid Marriages that are After Death Date"""
     invalidMarriages = []
     for fam, value in cursor.execute("SELECT ID, VALUE FROM FAM WHERE TAG=\"DIV\"").fetchall():
@@ -198,7 +198,7 @@ def marriageBeforeDeath(cursor, individualDeaths):
     return invalidMarriages
 
 
-def divorceBeforeDeath(cursor, individualDeaths, divorces):
+def divorceBeforeDeathUS06(cursor, individualDeaths, divorces):
     """Returns a List of Invalid Divorces that are After Death Date"""
     invalid = []
     for pair, date in divorces.items():
@@ -222,7 +222,7 @@ def divorceBeforeDeath(cursor, individualDeaths, divorces):
     return invalid
 
 
-def ageLimit(individualBirthdays):
+def ageLimitUS07(individualBirthdays):
     """Returns a List of Invalid Ages that are Greater Than 150"""
     invalidAge = []
     now = setCurrentDate()
@@ -232,7 +232,7 @@ def ageLimit(individualBirthdays):
     return (invalidAge)
 
 
-def bigamy(cursor, individualDeaths, divorces):
+def bigamyUS11(cursor, individualDeaths, divorces):
     """Returns a List of Invalid Marriages if Married to Another Person Already"""
     invalid = []
 
@@ -263,7 +263,7 @@ def bigamy(cursor, individualDeaths, divorces):
     return invalid
 
 
-def birthBeforeParentsMarriage(cursor, individualBirthdays):
+def birthBeforeParentsMarriageUS08(cursor, individualBirthdays):
     """Returns a List of Invalid individuals... children born before marriage of parents"""
     invalidIndividuals = []
     for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
@@ -276,7 +276,7 @@ def birthBeforeParentsMarriage(cursor, individualBirthdays):
     return invalidIndividuals
 
 
-def birthBeforeParentsDeath(cursor, individualBirthdays, individualDeaths):
+def birthBeforeParentsDeathUS09(cursor, individualBirthdays, individualDeaths):
     """Returns a List of Invalid individuals... children born after death of parents"""
     invalidIndividuals = []
     for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
@@ -300,7 +300,7 @@ def birthBeforeParentsDeath(cursor, individualBirthdays, individualDeaths):
     return invalidIndividuals
 
 
-def marriageAfter14(individualBirthdays, marriages):
+def marriageAfter14US10(individualBirthdays, marriages):
     """Returns a List of invalid marriages... husband or wife was marriage younger than 14"""
     invalidIndividuals = []
     for key, value in marriages.items():
@@ -313,7 +313,7 @@ def marriageAfter14(individualBirthdays, marriages):
     return invalidIndividuals
 
 
-def parentsNotTooOld(cursor, individualBirthdays):
+def parentsNotTooOldUS12(cursor, individualBirthdays):
     invalidIndividuals = []
     for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
         fam = fam[0]
@@ -333,7 +333,7 @@ def parentsNotTooOld(cursor, individualBirthdays):
     return invalidIndividuals
 
 
-def childrenLimit(cursor):
+def childrenLimitUS15(cursor):
     invalidFamilies = []
     for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
         fam = fam[0]
@@ -342,7 +342,7 @@ def childrenLimit(cursor):
     return invalidFamilies
 
 
-def consistentLastNames(cursor):
+def consistentLastNamesUS16(cursor):
     invalidFamilies = []
     for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
         fam = fam[0]
@@ -356,7 +356,7 @@ def consistentLastNames(cursor):
     return invalidFamilies
 
 
-def siblingsSpacing(cursor, individualBirthdays):
+def siblingsSpacingUS13(cursor, individualBirthdays):
     invalid = []
     siblings = []
     twoDays = datetime.timedelta(days=2)
@@ -376,7 +376,7 @@ def siblingsSpacing(cursor, individualBirthdays):
     return invalid
 
 
-def multipleBirths(cursor, individualBirthdays):
+def multipleBirthsUS14(cursor, individualBirthdays):
     invalid = []
     siblings = []
     for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
@@ -397,7 +397,7 @@ def multipleBirths(cursor, individualBirthdays):
     return invalid
 
 
-def uniqueIDs(cursor):
+def uniqueIDsUS22(cursor):
     invalidIndividuals = []
     invalidFamilies = []
     indiIDs = []
@@ -416,8 +416,7 @@ def uniqueIDs(cursor):
             famIDs.append(fam)
     return invalidIndividuals, invalidFamilies
 
-
-def uniqueNameAndBirth(cursor):
+def uniqueNameAndBirthUS23(cursor):
     invalildIndividuals = []
     nameList = []
     bDateList = []
@@ -432,8 +431,7 @@ def uniqueNameAndBirth(cursor):
             bDateList.append(birthdate)
     return invalildIndividuals
 
-
-def allUniqueSpousePairs(cursor):
+def allUniqueSpousePairsUS24(cursor):
     invalidPairs = []
     spouses = []
     for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
@@ -448,7 +446,7 @@ def allUniqueSpousePairs(cursor):
     return invalidPairs
 
 
-def uniqueFirstNames(cursor):
+def uniqueFirstNamesUS25(cursor):
     invalidIndis = []
     for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
         fam = fam[0]
@@ -473,7 +471,7 @@ def uniqueFirstNames(cursor):
     return invalidIndis
 
 
-def siblingsShouldNotMarry(cursor, marriages):
+def siblingsShouldNotMarryUS18(cursor, marriages):
     invalidMarriage = []
     for key, value in marriages.items():
         for key1 in cursor.execute("SELECT DISTINCT ID FROM FAM", ).fetchall():
@@ -484,8 +482,7 @@ def siblingsShouldNotMarry(cursor, marriages):
                     invalidMarriage.append(key)
     return invalidMarriage
 
-
-def correctGenderForRole(cursor):
+def correctGenderForRoleUS21(cursor):
     invalidGender = []
     for fam in cursor.execute("SELECT DISTINCT ID FROM FAM", ).fetchall():
         # for key1, value1 in treeList.items():
@@ -502,7 +499,8 @@ def correctGenderForRole(cursor):
     return invalidGender
 
 
-def correspondingEntries(treeList, indiList):
+
+def correspondingEntriesUS26(treeList, indiList):
     invalidList = []
     for famID in treeList:
         currentHusband = treeList.get(famID)[0]
@@ -523,7 +521,7 @@ def correspondingEntries(treeList, indiList):
                     invalidList.append("Missing child: " + child + " in family: " + famID)
     return invalidList       
 
-def noMarriagesToDescendants(cursor, marriages):
+def noMarriagesToDescendantsUS17(cursor, marriages):
     invalidList = []
     for spouse in marriages.keys():
         currentFamily = cursor.execute("SELECT ID FROM FAM WHERE VALUE=\"" + spouse[0] + "\"").fetchone()[0]
@@ -537,14 +535,14 @@ def noMarriagesToDescendants(cursor, marriages):
     return invalidList
 
 
-def listDeceased(individualDeaths):
+def listDeceasedUS29(individualDeaths):
     deceased = []
     for indi in individualDeaths.items():
         deceased.append(indi[0])
 
     return deceased
 
-def listLivingSingle(cursor, individualDeaths):
+def listLivingSingleUS31(cursor, individualDeaths):
     livingSingle = []
     for indi in cursor.execute("SELECT DISTINCT ID FROM INDI").fetchall():
         indi = indi[0]
@@ -553,7 +551,7 @@ def listLivingSingle(cursor, individualDeaths):
             livingSingle.append(indi)
     return livingSingle
 
-def listLivingMarried(cursor, individualDeaths):
+def listLivingMarriedUS30(cursor, individualDeaths):
     livingMarried = []
     for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
         fam = fam[0]
@@ -565,6 +563,25 @@ def listLivingMarried(cursor, individualDeaths):
             livingMarried.append(wife[0])
     return livingMarried
 
+def listUpcomingBirthdaysUS38(cursor, individualDeaths):
+    upcomingBirthdays = []
+    for indi in cursor.execute("SELECT DISTINCT ID FROM INDI").fetchall():
+        indi = indi[0]
+        birthday = getValue(cursor, "INDI", indi, "BIRT")
+        death = getValue(cursor, "INDI", indi, "DEAT")
+        thebirthday = convertDate(birthday)
+        bmonth = thebirthday.month
+        bday = thebirthday.day
+        now = setCurrentDate()
+        then = now + timedelta(days=30)
+        nmonth = now.month
+        nday = now.day
+        thmonth = then.month
+        thday = then.day
+        if death is None:
+            if (nmonth == bmonth and nday <= bday <= 30) or (thmonth == bmonth and 1 <= bday <= thday):
+                upcomingBirthdays.append(indi)
+    return upcomingBirthdays
 
 def us20_checkFirstCousins(cursor):
     invalidFamilies = []
@@ -634,26 +651,6 @@ def us20_auntsUnclesMarryNieceNephews(cursor):
                                 invalidFamilies.append(pair)
     return invalidFamilies
 
-def listUpcomingBirthdays(cursor, individualDeaths):
-    upcomingBirthdays = []
-    for indi in cursor.execute("SELECT DISTINCT ID FROM INDI").fetchall():
-        indi = indi[0]
-        birthday = getValue(cursor, "INDI", indi, "BIRT")
-        death = getValue(cursor, "INDI", indi, "DEAT")
-        thebirthday = convertDate(birthday)
-        bmonth = thebirthday.month
-        bday = thebirthday.day
-        now = setCurrentDate()
-        then = now + timedelta(days=30)
-        nmonth = now.month
-        nday = now.day
-        thmonth = then.month
-        thday = then.day
-        if death is None:
-            if (nmonth == bmonth and nday <= bday <= 30) or (thmonth == bmonth and 1 <= bday <= thday):
-                upcomingBirthdays.append(indi)
-    return upcomingBirthdays
-
 def main(dbFile="gedcom.db"):
     database = sqlite3.connect(dbFile)
     cursor = database.cursor()
@@ -668,52 +665,52 @@ def main(dbFile="gedcom.db"):
     print("Marriages: " + str(marriages))
 
     print("Invalid cases for marriage before current date(US01): " +
-          str(marriageBeforeCurrentDate(marriages)))
+          str(marriageBeforeCurrentDateUS01(marriages)))
     print("Invalid cases for divorce before current date(US01): " +
-          str(divorcesBeforeCurrentDate(divorces)))
+          str(divorcesBeforeCurrentDateUS01(divorces)))
     print("Invalid cases for birth before death(US03): " +
-          str(birthBeforeDeath(individualBirthdays, individualDeaths)))
+          str(birthBeforeDeathUS03(individualBirthdays, individualDeaths)))
     print("invalid cases for birth before marriage(US02): " +
-          str(birthBeforeMarriage(individualBirthdays, marriages)))
+          str(birthBeforeMarriageUS02(individualBirthdays, marriages)))
     print("Invalid cases for divorce before death(US06): " +
-          str(divorceBeforeDeath(cursor, individualDeaths, divorces)))
+          str(divorceBeforeDeathUS06(cursor, individualDeaths, divorces)))
     print("Invalid cases for age limit(US07): " +
-          str(ageLimit(individualBirthdays)))
+          str(ageLimitUS07(individualBirthdays)))
     print("Invalid cases for marriage before divorce(US04): " +
-          str(marriageBeforeDivorce(cursor, marriages, divorces)))
+          str(marriageBeforeDivorceUS04(cursor, marriages, divorces)))
     print("Invalid cases for marriage before death(US05): " +
-          str(marriageBeforeDeath(cursor, individualDeaths)))
+          str(marriageBeforeDeathUS05(cursor, individualDeaths)))
     print("Invalid cases for bigamy: " +
-          str(bigamy(cursor, individualDeaths, divorces)))
+          str(bigamyUS11(cursor, individualDeaths, divorces)))
     print("Invalid cases for marriage after 14 years old(US10): " +
-          str(marriageAfter14(individualBirthdays, marriages)))
+          str(marriageAfter14US10(individualBirthdays, marriages)))
     print("Invalid cases for parents not too old(US12): " +
-          str(parentsNotTooOld(cursor, individualBirthdays)))
+          str(parentsNotTooOldUS12(cursor, individualBirthdays)))
     print("Invalid cases for birth before marriage of parents(US08): " +
-          str(birthBeforeParentsMarriage(cursor, individualBirthdays)))
+          str(birthBeforeParentsMarriageUS08(cursor, individualBirthdays)))
     print("Invalid cases for birth after death of parents(US09): " +
-          str(birthBeforeParentsDeath(cursor, individualBirthdays, individualDeaths)))
+          str(birthBeforeParentsDeathUS09(cursor, individualBirthdays, individualDeaths)))
     print("Invalid cases for siblings spacing (US13): " +
-          str(siblingsSpacing(cursor, individualBirthdays)))
+          str(siblingsSpacingUS13(cursor, individualBirthdays)))
     print("Invalid cases for multiple births (US14): " +
-          str(multipleBirths(cursor, individualBirthdays)))
+          str(multipleBirthsUS14(cursor, individualBirthdays)))
     print("Invalid cases for Unique IDs (US22): " +
-          str(uniqueIDs(cursor)))
+          str(uniqueIDsUS22(cursor)))
     print("Invalid cases for Unique Name and Birth Date (US23): " +
-          str(uniqueNameAndBirth(cursor)))
-    # print("Invalid casesmarry for marriages sharing the same couples (US25): " +
-    # str(allUniqueSpousePairs()))
+          str(uniqueNameAndBirthUS23(cursor)))
+    #print("Invalid casesmarry for marriages sharing the same couples (US25): " +
+          #str(allUniqueSpousePairs()))
     print("Invalid cases for children sharing the same name and birthdays (US26): " +
-          str(uniqueFirstNames(cursor)))
+          str(uniqueFirstNamesUS25(cursor)))
     print("Invalid cases for children should not marry(US18): " +
-          str(siblingsShouldNotMarry(cursor, marriages)))
+          str(siblingsShouldNotMarryUS18(cursor, marriages)))
     print("Invalid cases for correct gender for role(US21): " +
-          str(correctGenderForRole(cursor)))
-    print("Invalid cases for corresponding entries (US26): " + str(correspondingEntries(treeList, indiList)))
+          str(correctGenderForRoleUS21(cursor)))
+    print("Invalid cases for corresponding entries (US26): " + str(correspondingEntriesUS26(treeList, indiList)))
     print("List Deceased(US29): " +
-          str(listDeceased(individualDeaths)))
+          str(listDeceasedUS29(individualDeaths)))
     print("List Living Married(US30): " +
-          str(listLivingMarried(cursor, individualDeaths)))
-    print("List Living Single(US31): " + str(listLivingSingle(cursor, individualDeaths)))
-    print("List of Individuals with Upcoming Birthdays(US38): " + str(listUpcomingBirthdays(cursor, individualDeaths)))
-    print("Invalid cases for no marriages to descendants (US17): " + str(noMarriagesToDescendants(cursor, marriages)))
+          str(listLivingMarriedUS30(cursor, individualDeaths)))
+    print("List Living Single(US31): " + str(listLivingSingleUS31(cursor, individualDeaths)))
+    print("List of Individuals with Upcoming Birthdays(US38): " + str(listUpcomingBirthdaysUS38(cursor, individualDeaths)))
+    print("Invalid cases for no marriages to descendants (US17): " + str(noMarriagesToDescendantsUS17(cursor, marriages)))
