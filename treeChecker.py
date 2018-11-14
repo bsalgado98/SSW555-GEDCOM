@@ -17,7 +17,7 @@ def getValue(cursor, table, id, tag, fetchall=False):
 
 
 def convertDates(treeList, individualList):
-    """Coverts Dates in Individual and Tree Lists yo Datetime Objects"""
+    """Coverts Dates in Individual and Tree Lists to Datetime Objects"""
     for key, value in individualList.items():
         if value["BIRT"] != "NA":
             value["BIRT"] = datetime.datetime.strptime(value["BIRT"], "%d %b %Y").date()
@@ -31,6 +31,10 @@ def convertDates(treeList, individualList):
 
 
 def convertDate(string):
+    if len(string.split()) == 2:
+        return datetime.datetime.strptime("1 " + string, "%d %b %Y").date()
+    if len(string.split()) == 1:
+        return datetime.datetime.strptime("1 JAN " + string, "%d %b %Y").date()
     return datetime.datetime.strptime(string, "%d %b %Y").date()
 
 
@@ -509,6 +513,19 @@ def correspondingEntries(treeList, indiList):
                 if indiList.get(child)[1] is not None and famID not in indiList.get(child)[1]:
                     invalidList.append("Missing child: " + child + " in family: " + famID)
     return invalidList       
+
+def noMarriagesToDescendants(cursor, marriages):
+    invalidList = []
+    for spouse in marriages.keys():
+        currentFamily = cursor.execute("SELECT ID FROM FAM WHERE VALUE=\"" + spouse[0] + "\"").fetchone()[0]
+        for child in cursor.execute("SELECT VALUE FROM FAM WHERE ID=\"" + currentFamily + "\" AND TAG=\"CHIL\"").fetchall():
+            if child[0] == spouse[1]:
+                invalidList.append(currentFamily)
+        currentFamily = cursor.execute("SELECT ID FROM FAM WHERE VALUE=\"" + spouse[1] + "\"").fetchone()[0]
+        for child in cursor.execute("SELECT VALUE FROM FAM WHERE ID=\"" + currentFamily + "\" AND TAG=\"CHIL\"").fetchall():
+            if child[0] == spouse[0]:
+                invalidList.append(currentFamily)
+    return invalidList
             
 
 
@@ -570,7 +587,9 @@ def main(dbFile="gedcom.db"):
     divorces = getDivorces(cursor)
     treeList = getAllIDsFromFamilies(cursor)
     indiList = getAllIDsFromIndividuals(cursor)
-
+    
+    print("Marriages: " + str(marriages))
+    
     print("Invalid cases for marriage before current date(US01): " +
           str(marriageBeforeCurrentDate(marriages)))
     print("Invalid cases for divorce before current date(US01): " +
@@ -620,3 +639,4 @@ def main(dbFile="gedcom.db"):
           str(listLivingMarried(cursor, individualDeaths)))
     print("List Living Single(US31): " + str(listLivingSingle(cursor, individualDeaths)))
     print("List of Individuals with Upcoming Birthdays(US38): " + str(listUpcomingBirthdays(cursor, individualDeaths)))
+    print("Invalid cases for no marriages to descendants (US17): " + str(noMarriagesToDescendants(cursor, marriages)))

@@ -905,6 +905,8 @@ class TestTreeChecker(unittest.TestCase):
         self.assertEqual(capturedOutput.getvalue(), capturedOutput.getValue())
 
     def test_listDeceased(self):
+        
+    def test_noMarriagesToDescendants_US17(self):
         treeList = {
             "F1": {
                 "HUSB": "I1",
@@ -985,6 +987,17 @@ class TestTreeChecker(unittest.TestCase):
             "F1": {
                 "HUSB": "I3",
                 "WIFE": "I4"
+                "CHIL": ["I3, I4"]
+            },
+            "F2": {
+                "HUSB": "I5",
+                "WIFE": "I6",
+                "CHIL": ["I6"]
+            },
+            "F3": {
+                "HUSB": "I7",
+                "WIFE": "I8",
+                "CHIL": "I7"
             }
         }
         individualList = {
@@ -1011,6 +1024,25 @@ class TestTreeChecker(unittest.TestCase):
         self.assertEqual(treeChecker.listUpcomingBirthdays(cursor, individualDeaths), ["I1", "I3"])
 
 
+                "NAME": "j"
+            }
+        }
+        marriages = {
+            ('I1', 'I2'): 'a date',
+            ('I5', 'I6'): 'a date',
+            ('I7', 'I8'): 'a date'
+        }
+        cursor = setupTestDB("noMarriagesToDescendants.db", treeList, individualList)
+        self.assertEqual(treeChecker.noMarriagesToDescendants(cursor, marriages), ['F2', 'F3'])
+    
+    def test_includePartialDates_US41(self):
+        self.maxDiff = None
+        capturedOutput = io.StringIO()
+        sys.stdout = capturedOutput
+        printTable.printTree()
+        sys.stdout = sys.__stdout__
+        self.assertEqual(capturedOutput.getvalue(), capturedOutput.getValue())
+    
 if __name__ == '__main__':
     print('Running Unit Tests')
     unittest.main()
