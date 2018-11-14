@@ -914,14 +914,14 @@ class TestTreeChecker(unittest.TestCase):
             "F1": {
                 "HUSB": "I1",
                 "WIFE": "I2",
-                "CHIL": ["I3","I4"]
+                "CHIL": ["I3", "I4"]
             }
         }
         individualList = {
             "I1": {
-                    "NAME": "John /Doe/",
-                    "SEX": "F"
-                },
+                "NAME": "John /Doe/",
+                "SEX": "F"
+            },
             "I2": {
                 "NAME": "Mary /Doe/",
                 "SEX": "F"
@@ -930,6 +930,7 @@ class TestTreeChecker(unittest.TestCase):
         cursor = setupTestDB("listDeceased.db", treeList, individualList)
         individualDeaths = treeChecker.getIndividualDeaths(cursor)
         self.assertEqual(treeChecker.listDeceased(individualDeaths), [])
+
 
     def test_listLivingSingle(self):
         treeList = {
@@ -989,7 +990,18 @@ class TestTreeChecker(unittest.TestCase):
         treeList = {
             "F1": {
                 "HUSB": "I3",
-                "WIFE": "I4"
+                "WIFE": "I4",
+                "CHIL": ["I3, I4"]
+            },
+            "F2": {
+                "HUSB": "I5",
+                "WIFE": "I6",
+                "CHIL": ["I6"]
+            },
+            "F3": {
+                "HUSB": "I7",
+                "WIFE": "I8",
+                "CHIL": "I7"
             }
         }
         individualList = {
@@ -1138,6 +1150,7 @@ class TestTreeChecker(unittest.TestCase):
         printTable.printTree()
         sys.stdout = sys.__stdout__
         self.assertEqual(capturedOutput.getvalue(), capturedOutput.getValue())
+
 
 if __name__ == '__main__':
     print('Running Unit Tests')
