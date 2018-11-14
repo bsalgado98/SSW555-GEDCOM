@@ -528,6 +528,14 @@ def listDeceased(individualDeaths):
 
     return deceased
 
+def listLivingSingle(cursor, individualDeaths):
+    livingSingle = []
+    for indi in cursor.execute("SELECT DISTINCT ID FROM INDI").fetchall():
+        indi = indi[0]
+        test = getValue(cursor, "INDI", indi, "FAMS")
+        if test is None and indi not in livingSingle and indi not in individualDeaths.items():
+            livingSingle.append(indi)
+    return livingSingle
 
 def listLivingMarried(cursor, individualDeaths):
     livingMarried = []
@@ -610,6 +618,25 @@ def us20_auntsUnclesMarryNieceNephews(cursor):
                                 invalidFamilies.append(pair)
     return invalidFamilies
 
+def listUpcomingBirthdays(cursor, individualDeaths):
+    upcomingBirthdays = []
+    for indi in cursor.execute("SELECT DISTINCT ID FROM INDI").fetchall():
+        indi = indi[0]
+        birthday = getValue(cursor, "INDI", indi, "BIRT")
+        death = getValue(cursor, "INDI", indi, "DEAT")
+        thebirthday = convertDate(birthday)
+        bmonth = thebirthday.month
+        bday = thebirthday.day
+        now = setCurrentDate()
+        then = now + timedelta(days=30)
+        nmonth = now.month
+        nday = now.day
+        thmonth = then.month
+        thday = then.day
+        if death is None:
+            if (nmonth == bmonth and nday <= bday <= 30) or (thmonth == bmonth and 1 <= bday <= thday):
+                upcomingBirthdays.append(indi)
+    return upcomingBirthdays
 
 def main(dbFile="gedcom.db"):
     database = sqlite3.connect(dbFile)
@@ -665,7 +692,9 @@ def main(dbFile="gedcom.db"):
     print("Invalid cases for correct gender for role(US21): " +
           str(correctGenderForRole(cursor)))
     print("Invalid cases for corresponding entries (US26): " + str(correspondingEntries(treeList, indiList)))
-    print("List Deceased(US30): " +
+    print("List Deceased(US29): " +
           str(listDeceased(individualDeaths)))
-    print("List Living Married(US31): " +
+    print("List Living Married(US30): " +
           str(listLivingMarried(cursor, individualDeaths)))
+    print("List Living Single(US31): " + str(listLivingSingle(cursor, individualDeaths)))
+    print("List of Individuals with Upcoming Birthdays(US38): " + str(listUpcomingBirthdays(cursor, individualDeaths)))

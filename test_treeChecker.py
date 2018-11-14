@@ -931,6 +931,37 @@ class TestTreeChecker(unittest.TestCase):
         individualDeaths = treeChecker.getIndividualDeaths(cursor)
         self.assertEqual(treeChecker.listDeceased(individualDeaths), [])
 
+    def test_listLivingSingle(self):
+        treeList = {
+            "F1": {
+                "HUSB": "I1",
+                "WIFE": "I2",
+                "CHIL": ["I3", "I4"]
+            }
+        }
+        individualList = {
+            "I1": {
+                "NAME": "John /Doe/",
+                "SEX": "F",
+                "FAMS": "F1"
+            },
+            "I2": {
+                "NAME": "Mary /Doe/",
+                "SEX": "F",
+                "FAMS": "F1"
+            },
+            "I3": {
+                "NAME": "Dave /Doe/",
+                "SEX": "M"
+            },
+            "I4": {
+                "NAME": "Jen /Doe/",
+                "SEX": "F"
+            }
+        }
+        cursor = setupTestDB("listLivingSingle.db", treeList, individualList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        self.assertEqual(treeChecker.listLivingSingle(cursor, individualDeaths), ["I3", "I4"])
 
     def test_listLivingMarried(self):
         treeList = {
@@ -953,6 +984,36 @@ class TestTreeChecker(unittest.TestCase):
         cursor = setupTestDB("listLivingMarried.db", treeList, individualList)
         individualDeaths = treeChecker.getIndividualDeaths(cursor)
         self.assertEqual(treeChecker.listLivingMarried(cursor, individualDeaths), ["I1", "I2"])
+
+    def test_upcomingBirthdays(self):
+        treeList = {
+            "F1": {
+                "HUSB": "I3",
+                "WIFE": "I4"
+            }
+        }
+        individualList = {
+            "I1": {
+                "NAME": "John /Doe/",
+                "BIRT": datetime.date(1997, 12, 9)
+            },
+            "I2": {
+                "NAME": "Jack /Frost/",
+                "BIRT": datetime.date(1978, 12, 9),
+                "DEAT": datetime.date(2012, 12, 21)
+            },
+            "I3": {
+                "NAME": "Tony /Stark/",
+                "BIRT": datetime.date(1978, 11, 27)
+            },
+            "I4": {
+                "NAME": "Pepper /Potts/",
+                "BIRT": datetime.date(1976, 10, 13)
+            }
+        }
+        cursor = setupTestDB("listUpcomingBirthdays.db", treeList, individualList)
+        individualDeaths = treeChecker.getIndividualDeaths(cursor)
+        self.assertEqual(treeChecker.listUpcomingBirthdays(cursor, individualDeaths), ["I1", "I3"])
 
 
     def test_us20_checkFirstCousins01(self):
