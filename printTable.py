@@ -16,7 +16,12 @@ def printTree(dbFile="gedcom.db"):
         indi = indi[0]
         birth = getValue(c, "INDI", indi, "BIRT")
         if birth is not None:
-            birth = datetime.datetime.strptime(birth, "%d %b %Y").date()
+            if len(birth.split()) == 2:
+                birth = datetime.datetime.strptime("1 " + birth, "%d %b %Y").date()
+            elif len(birth.split()) == 1:
+                birth = datetime.datetime.strptime("1 JAN " + birth, "%d %b %Y").date()
+            else:
+                birth = datetime.datetime.strptime(birth, "%d %b %Y").date()
         else:
             birth = datetime.date(1, 1, 1)  # just to prevent errors
         death = getValue(c, "INDI", indi, "DEAT")
@@ -60,7 +65,12 @@ def getOrderedChildren(childArr, cursor):
     birthdays = []
     for child in childArr:
         for birthday in cursor.execute("SELECT VALUE FROM INDI WHERE TAG=\"BIRT\" AND ID=\"" + child + "\"").fetchall():
-            birthdays.append((child, datetime.datetime.strptime(birthday[0], "%d %b %Y")))
+            if len(birthday[0].split()) == 2:
+                birthdays.append((child, datetime.datetime.strptime("1 " + birthday[0], "%d %b %Y")))
+            elif len(birthday[0].split()) == 1:
+                birthdays.append((child, datetime.datetime.strptime("1 JAN " + birthday[0], "%d %b %Y")))
+            else: 
+                birthdays.append((child, datetime.datetime.strptime(birthday[0], "%d %b %Y")))
     birthdays_sorted = sorted(birthdays, key=lambda x: x[1])
     children_sorted = []
     for entry in birthdays_sorted:
