@@ -542,6 +542,75 @@ def listLivingMarried(cursor, individualDeaths):
     return livingMarried
 
 
+def us20_checkFirstCousins(cursor):
+    invalidFamilies = []
+    for fam in cursor.execute("SELECT DISTINCT ID FROM FAM").fetchall():
+        fam = fam[0]
+        husb = getValue(cursor, "FAM", fam, "HUSB")
+        wife = getValue(cursor, "FAM", fam, "WIFE")
+        children = getValue(cursor, "FAM", fam, "CHIL", fetchall=True)
+        husbSide = cursor.execute("SELECT VALUE FROM INDI WHERE ID=? AND TAG=?", (husb, "FAMC")).fetchone()
+        wifeSide = cursor.execute("SELECT VALUE FROM INDI WHERE ID=? AND TAG=?", (wife, "FAMC")).fetchone()
+        sides = []
+        if husbSide:
+            sides.append((husb, husbSide[0]))
+        if wifeSide:
+            sides.append((wife, wifeSide[0]))
+        for spouse, spouseSide in sides:
+            if fam:
+                aunts = getValue(cursor, "FAM", spouseSide, "CHIL", fetchall=True)
+                aunts.remove(spouse)
+                for aunt in aunts:
+                    cousinFams = getValue(cursor, "INDI", aunt, "FAMS", fetchall=True)
+                    if cousinFams != (None,):
+                        for cousinFam in cousinFams:
+                            cousins = getValue(cursor, "FAM", cousinFam, "CHIL", fetchall=True)
+                            if cousins != (None,):
+                                for cousin in cousins:
+                                    for chil in children:
+                                        pair1 = cursor.execute("SELECT ID FROM FAM WHERE TAG=? AND VALUE=? INTERSECT " +
+                                                               "SELECT ID FROM FAM WHERE TAG=? AND VALUE=?",
+                                                               ("HUSB", cousin, "WIFE", chil)).fetchone()
+                                        pair2 = cursor.execute("SELECT ID FROM FAM WHERE TAG=? AND VALUE=? INTERSECT " +
+                                                               "SELECT ID FROM FAM WHERE TAG=? AND VALUE=?",
+                                                               ("HUSB", chil, "WIFE", cousin)).fetchone()
+                                        if pair1:
+                                            pair1 = pair1[0]
+                                            invalidFamilies.append(pair1)
+                                        elif pair2:
+                                            pair2 = pair2[0]
+                                            invalidFamilies.append(pair2)
+    return list(set(invalidFamilies))
+
+
+def us20_auntsUnclesMarryNieceNephews(cursor):
+    invalidFamilies = []
+    for indi in cursor.execute("SELECT DISTINCT ID FROM INDI").fetchall():
+        indi = indi[0]
+        childOf = getValue(cursor, "INDI", indi, "FAMC")
+        if childOf:
+            siblings = getValue(cursor, "FAM", childOf, "CHIL", fetchall=True)
+            siblings.remove(indi)
+            if siblings:
+                for sib in siblings:
+                    sibSpouseOf = getValue(cursor, "INDI", sib, "FAMS", fetchall=True)
+                    sibChildren = []
+                    if sibSpouseOf:
+                        for sibFam in sibSpouseOf:
+                            sibFamChildren = getValue(cursor, "FAM", sibFam, "CHIL", fetchall=True)
+                            if sibFamChildren:
+                                sibChildren += sibFamChildren
+                    if sibChildren:
+                        for sibChild in sibChildren:
+                            pair = cursor.execute("SELECT VALUE FROM INDI WHERE ID=? AND TAG=? INTERSECT " +
+                                                  "SELECT VALUE FROM INDI WHERE ID=? AND TAG=?",
+                                                  (indi, "FAMS", sibChild, "FAMS")).fetchone()
+                            if pair:
+                                pair = pair[0]
+                                invalidFamilies.append(pair)
+    return invalidFamilies
+
+
 def main(dbFile="gedcom.db"):
     database = sqlite3.connect(dbFile)
     cursor = database.cursor()

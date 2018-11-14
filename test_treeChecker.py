@@ -955,6 +955,89 @@ class TestTreeChecker(unittest.TestCase):
         self.assertEqual(treeChecker.listLivingMarried(cursor, individualDeaths), ["I1", "I2"])
 
 
+    def test_us20_checkFirstCousins01(self):
+        """Test if married cousins returns a list containing that family"""
+        treelist = {
+            "F1": {
+                "HUSB": "I1",
+                "WIFE": "I2"
+            },
+            "F2": {
+                "HUSB": "I3",
+                "WIFE": "I4",
+                "CHIL": "I1"
+            },
+            "F3": {
+                "HUSB": "I5",
+                "WIFE": "I6",
+                "CHIL": ["I3", "I7"]
+            },
+            "F4": {
+                "HUSB": "I7",
+                "WIFE": "I8",
+                "CHIL": "I2"
+            }
+        }
+        indiList = {
+            "I1": {
+                "FAMS": "F1",
+                "FAMC": "F2"
+            },
+            "I2": {
+                "FAMS": "F1",
+                "FAMC": "F4"
+            },
+            "I3": {
+                "FAMS": "F2",
+                "FAMC": "F3"
+            },
+            "I4": {
+                "FAMS": "F2"
+            },
+            "I5": {
+                "FAMS": "F3"
+            },
+            "I6": {
+                "FAMS": "F3"
+            },
+            "I7": {
+                "FAMS": "F4",
+                "FAMC": "F3"
+            },
+            "I8": {
+                "FAMS": "F4"
+            }
+        }
+        cursor = setupTestDB("us20_checkFirstCousins01.db", treelist, indiList)
+        self.assertEqual(["F1"], treeChecker.us20_checkFirstCousins(cursor))
+
+    def test_us20_auntsUnclesMarryNieceNephews01(self):
+        treeList = {
+            "F1": {
+                "CHIL": ["I1", "I2"]
+            },
+            "F2": {
+                "CHIL": ["I3"]
+            }
+        }
+        indiList = {
+            "I1": {
+                "FAMC": "F1",
+                "FAMS": "F3"
+            },
+            "I2": {
+                "FAMC": "F1",
+                "FAMS": "F2"
+            },
+            "I3": {
+                "FAMC": "F2",
+                "FAMS": "F3"
+            }
+        }
+        cursor = setupTestDB("test_auntsUnclesMarryNieceNephews01.db", treeList, indiList)
+        self.assertEqual(["F3"], treeChecker.us20_auntsUnclesMarryNieceNephews(cursor))
+
+
 if __name__ == '__main__':
     print('Running Unit Tests')
     unittest.main()
